@@ -1,0 +1,2 @@
+# Hand-written native module bridge if `expo-local-authentication` is
+# insufficient. See `native_modules/widgets/README.md` for the pattern.

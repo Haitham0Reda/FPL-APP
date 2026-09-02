@@ -1,0 +1,50 @@
+# dependencies
+node_modules/
+.expo/
+.expo-shared/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# macOS
+.DS_Store
+
+# Native build artifacts (regenerate via `expo prebuild`)
+ios/
+android/
+
+# Environment
+.env*.local
+.env
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/settings.json
+*.swp
+
+# Logs
+*.log
+yarn-error.log
+firebase-debug.log
+
+# Tests
+coverage/
+
+# Metro
+.metro-health-check*
+
+# Bundle artifacts
+*.jsbundle
+
+# Ruby / CocoaPods (only on macOS)
+/vendor/bundle
+
+# Temp
+tmp/

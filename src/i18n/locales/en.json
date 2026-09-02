@@ -1,0 +1,41 @@
+{
+  "app": {
+    "name": "Elite FPL"
+  },
+  "tabs": {
+    "home": "Home",
+    "myTeam": "My Team",
+    "live": "Live",
+    "workbook": "Workbook",
+    "profile": "Profile"
+  },
+  "myTeam": {
+    "subtabs": {
+      "squad": "Squad",
+      "fixtures": "Fixtures",
+      "captain": "Captain",
+      "chips": "Chips",
+      "transfers": "Transfers",
+      "compare": "Compare",
+      "research": "Research",
+      "strategy": "Strategy"
+    },
+    "topBar": {
+      "value": "Value",
+      "itb": "ITB",
+      "noTeam": "No team",
+      "switchTeam": "Switch team",
+      "previousGameweek": "Previous gameweek",
+      "nextGameweek": "Next gameweek"
+    }
+  },
+  "common": {
+    "comingSoon": "Coming soon",
+    "ok": "OK",
+    "cancel": "Cancel"
+  },
+  "onboarding": {
+    "welcome": "Welcome to Elite FPL",
+    "addTeam": "Add your first team"
+  }
+}

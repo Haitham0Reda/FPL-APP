@@ -1,0 +1,41 @@
+{
+  "app": {
+    "name": "إيليت إف بي إل"
+  },
+  "tabs": {
+    "home": "الرئيسية",
+    "myTeam": "فريقي",
+    "live": "مباشر",
+    "workbook": "دفتر العمل",
+    "profile": "الحساب"
+  },
+  "myTeam": {
+    "subtabs": {
+      "squad": "التشكيلة",
+      "fixtures": "المباريات",
+      "captain": "الكابتن",
+      "chips": "الشبكات",
+      "transfers": "الانتقالات",
+      "compare": "المقارنة",
+      "research": "الأبحاث",
+      "strategy": "الاستراتيجية"
+    },
+    "topBar": {
+      "value": "القيمة",
+      "itb": "في البنك",
+      "noTeam": "لا يوجد فريق",
+      "switchTeam": "تبديل الفريق",
+      "previousGameweek": "الجولة السابقة",
+      "nextGameweek": "الجولة التالية"
+    }
+  },
+  "common": {
+    "comingSoon": "قريباً",
+    "ok": "موافق",
+    "cancel": "إلغاء"
+  },
+  "onboarding": {
+    "welcome": "مرحباً بك في إيليت إف بي إل",
+    "addTeam": "أضف فريقك الأول"
+  }
+}
