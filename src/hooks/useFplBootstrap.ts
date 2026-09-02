@@ -17,13 +17,14 @@
  *   const currentGameweek = data?.events.find(e => e.is_current);
  */
 
-import { useQuery } from "@tanstack/react-query";
-import { fplApi, fplQueryKeys } from "../data/fpl/client";
+import type { QueryFunctionContext } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+import { getBootstrap, type FplEvent } from '@/data/fpl/client';
 
 export const useFplBootstrap = () => {
   return useQuery({
-    queryKey: fplQueryKeys.bootstrap(),
-    queryFn: fplApi.bootstrap,
+    queryKey: ['fpl', 'bootstrap'],
+    queryFn: ({ signal }: QueryFunctionContext) => getBootstrap(signal),
     // Cache for 5 minutes — bootstrap data changes slowly except during price windows
     staleTime: 5 * 60 * 1000,
     // Keep in cache for 30 minutes even when unmounted
@@ -43,7 +44,7 @@ export const useFplBootstrap = () => {
  */
 export const useCurrentGameweek = () => {
   const { data, ...rest } = useFplBootstrap();
-  const currentGameweek = data?.events.find((event) => event.is_current);
+  const currentGameweek = data?.events.find((event: FplEvent) => event.is_current);
   return { gameweek: currentGameweek, ...rest };
 };
 
@@ -53,7 +54,7 @@ export const useCurrentGameweek = () => {
  */
 export const useNextGameweek = () => {
   const { data, ...rest } = useFplBootstrap();
-  const nextGameweek = data?.events.find((event) => event.is_next);
+  const nextGameweek = data?.events.find((event: FplEvent) => event.is_next);
   return { gameweek: nextGameweek, ...rest };
 };
 

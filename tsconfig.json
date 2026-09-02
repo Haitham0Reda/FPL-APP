@@ -6,21 +6,20 @@
     "noImplicitOverride": true,
     "exactOptionalPropertyTypes": true,
     "useDefineForClassFields": true,
+    "lib": ["ES2017"],
+    "jsx": "react-native",
+    "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
       "@/*": [
         "src/*"
       ]
-    },
-    "types": [
-      "react-native",
-      "jest",
-      "node"
-    ]
+    }
   },
   "include": [
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "global.d.ts"
   ],
   "exclude": [
     "node_modules",

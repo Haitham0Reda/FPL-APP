@@ -20,11 +20,11 @@ export interface CaptainCandidate {
   score: number;
   xpPts: number;
   /** Top 2–3 contributing factors — surfaced in the Captain tab UI. */
-  factors: Array<{
+  factors: {
     label: string;
     contribution: number;
     detail: string;
-  }>;
+  }[];
 }
 
 export interface RecommendationWeights {
@@ -65,7 +65,7 @@ const minutesRiskPenalty = (risk: Player["minutesRisk"]): number => {
  * unit-testable and the solver (Phase 2) can call it inside its search.
  */
 export const rankCaptains = (
-  candidates: Array<{ player: Player; projection: XPtsProjection }>,
+  candidates: { player: Player; projection: XPtsProjection }[],
   options: {
     differential?: boolean;
     weights?: Partial<RecommendationWeights>;

@@ -36,7 +36,7 @@ export interface FPLEvent {
   is_previous: boolean;
   is_current: boolean;
   is_next: boolean;
-  chip_plays: Array<{ chip_name: string; num_played: number }>;
+  chip_plays: { chip_name: string; num_played: number }[];
   most_selected: number | null;
   most_transferred_in: number | null;
   top_element: number | null;
@@ -245,8 +245,8 @@ export interface FPLFixture {
 
 export interface FPLFixtureStat {
   identifier: string; // "goals_scored", "assists", "bonus", etc.
-  a: Array<{ value: number; element: number }>; // away players
-  h: Array<{ value: number; element: number }>; // home players
+  a: { value: number; element: number }[]; // away players
+  h: { value: number; element: number }[]; // home players
 }
 
 /* ── /event/{gw}/live/ ─────────────────────────────────────────────── */
@@ -283,14 +283,14 @@ export interface FPLLiveElement {
     total_points: number;
     in_dreamteam: boolean;
   };
-  explain: Array<{
+  explain: {
     fixture: number;
-    stats: Array<{
+    stats: {
       identifier: string;
       points: number;
       value: number;
-    }>;
-  }>;
+    }[];
+  }[];
 }
 
 /* ── /entry/{managerId}/ ───────────────────────────────────────────── */
@@ -312,7 +312,7 @@ export interface FPLManagerEntry {
   summary_event_rank: number;
   current_event: number;
   leagues: {
-    classic: Array<{
+    classic: {
       id: number;
       name: string;
       short_name: string | null;
@@ -331,8 +331,8 @@ export interface FPLManagerEntry {
       cup_qualified: boolean | null;
       entry_rank: number;
       entry_last_rank: number;
-    }>;
-    h2h: Array<unknown>; // similar structure
+    }[];
+    h2h: unknown[]; // similar structure
     cup: unknown;
     cup_matches: unknown[];
   };
@@ -348,12 +348,12 @@ export interface FPLManagerEntry {
 
 export interface FPLManagerPicks {
   active_chip: string | null; // "bboost", "3xc", "wildcard", "freehit"
-  automatic_subs: Array<{
+  automatic_subs: {
     entry: number;
     element_in: number;
     element_out: number;
     event: number;
-  }>;
+  }[];
   entry_history: {
     event: number;
     points: number;
@@ -367,19 +367,19 @@ export interface FPLManagerPicks {
     event_transfers_cost: number;
     points_on_bench: number;
   };
-  picks: Array<{
+  picks: {
     element: number; // player FPL ID
     position: number; // 1-15 (1-11 starting, 12-15 bench)
     multiplier: number; // 0, 1, 2 (bench, normal, captain), 3 (triple captain)
     is_captain: boolean;
     is_vice_captain: boolean;
-  }>;
+  }[];
 }
 
 /* ── /element-summary/{playerId}/ ──────────────────────────────────── */
 
 export interface FPLElementSummary {
-  fixtures: Array<{
+  fixtures: {
     id: number;
     code: number;
     team_h: number;
@@ -394,8 +394,8 @@ export interface FPLElementSummary {
     event_name: string;
     is_home: boolean;
     difficulty: number;
-  }>;
-  history: Array<{
+  }[];
+  history: {
     element: number;
     fixture: number;
     opponent_team: number;
@@ -432,8 +432,8 @@ export interface FPLElementSummary {
     selected: number;
     transfers_in: number;
     transfers_out: number;
-  }>;
-  history_past: Array<{
+  }[];
+  history_past: {
     season_name: string; // "2025/26"
     element_code: number;
     start_cost: number;
@@ -461,5 +461,5 @@ export interface FPLElementSummary {
     expected_assists: string;
     expected_goal_involvements: string;
     expected_goals_conceded: string;
-  }>;
+  }[];
 }

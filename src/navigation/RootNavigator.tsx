@@ -33,7 +33,6 @@ const Tabs = createBottomTabNavigator<RootTabParamList>();
  * `Icon` component post-scaffold (e.g. lucide-react-native).
  */
 const TabIcon: React.FC<{ glyph: string; focused: boolean }> = ({ glyph }) => (
-  // eslint-disable-next-line react-native/no-raw-text
   <>{glyph}</>
 );
 
