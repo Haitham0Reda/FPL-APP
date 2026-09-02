@@ -18,6 +18,12 @@ import {
   View,
   TextStyle,
 } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  withSpring,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { Text } from "../components/primitives/Text";
 import { colors, spacing, radius } from "../theme";
 import { triggerHaptic } from "../services/haptic";
@@ -46,11 +52,13 @@ interface Props {
   onChange: (key: SubTabKey) => void;
 }
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 export const MyTeamTabStrip: React.FC<Props> = ({ active, onChange }) => {
   const handlePress = useCallback(
     (key: SubTabKey) => () => {
       if (key !== active) {
-        triggerHaptic("swipeToCompare");
+        triggerHaptic("selection");
       }
       onChange(key);
     },
@@ -58,68 +66,115 @@ export const MyTeamTabStrip: React.FC<Props> = ({ active, onChange }) => {
   );
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.container}
-      style={styles.scroll}
+    <View style={styles.wrapper}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.container}
+        style={styles.scroll}
+      >
+        {MY_TEAM_SUBTABS.map((tab) => {
+          const isActive = tab.key === active;
+          return (
+            <TabPill
+              key={tab.key}
+              tab={tab}
+              isActive={isActive}
+              onPress={handlePress(tab.key)}
+            />
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
+};
+
+interface TabPillProps {
+  tab: SubTab;
+  isActive: boolean;
+  onPress: () => void;
+}
+
+const TabPill: React.FC<TabPillProps> = ({ tab, isActive, onPress }) => {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.95, { damping: 15, stiffness: 300 });
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+  };
+
+  return (
+    <AnimatedPressable
+      accessibilityRole="tab"
+      accessibilityState={{ selected: isActive }}
+      accessibilityLabel={`${tab.label} tab${isActive ? ", selected" : ""}`}
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      style={[
+        styles.pill,
+        isActive && styles.pillActive,
+        animatedStyle,
+      ]}
     >
-      {MY_TEAM_SUBTABS.map((tab) => {
-        const isActive = tab.key === active;
-        return (
-          <Pressable
-            key={tab.key}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: isActive }}
-            onPress={handlePress(tab.key)}
-            style={[styles.pill, isActive && styles.pillActive]}
-          >
-            <Text style={[styles.label, isActive ? styles.labelActive : null]}>
-              {tab.label}
-            </Text>
-            {isActive && <View style={styles.activeDot} />}
-          </Pressable>
-        );
-      })}
-    </ScrollView>
+      <Text style={[styles.label, isActive && styles.labelActive]}>
+        {tab.label}
+      </Text>
+      {isActive && <View style={styles.activeDot} />}
+    </AnimatedPressable>
   );
 };
 
 const styles = StyleSheet.create({
-  scroll: {
+  wrapper: {
     backgroundColor: colors.bg.surface,
     borderBottomColor: colors.border.subtle,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
+  },
+  scroll: {
+    backgroundColor: "transparent",
   },
   container: {
     paddingHorizontal: spacing.base,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.md,
     gap: spacing.sm,
   },
   pill: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.sm + 2,
     borderRadius: radius.full,
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.xs,
+    borderWidth: 1,
+    borderColor: "transparent",
+    backgroundColor: "transparent",
   },
   pillActive: {
     backgroundColor: colors.accent.primaryMuted,
+    borderColor: colors.accent.primary,
   },
   label: {
     color: colors.text.secondary,
-    fontSize: 13,
-    fontWeight: "500",
+    fontSize: 14,
+    fontWeight: "600",
+    letterSpacing: -0.1,
   },
   labelActive: {
     color: colors.accent.primary,
-    fontWeight: "600",
+    fontWeight: "700",
   } as TextStyle,
   activeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 5,
+    height: 5,
+    borderRadius: 2.5,
     backgroundColor: colors.accent.primary,
   },
 });

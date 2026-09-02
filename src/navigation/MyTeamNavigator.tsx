@@ -12,6 +12,12 @@
 import React, { useState, useCallback } from "react";
 import { View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, {
+  FadeIn,
+  FadeOut,
+  SlideInRight,
+  SlideOutLeft,
+} from "react-native-reanimated";
 
 import { MyTeamTabStrip, MY_TEAM_SUBTABS } from "./MyTeamTabStrip";
 import { MyTeamTopBar } from "./MyTeamTopBar";
@@ -53,7 +59,14 @@ export const MyTeamNavigator: React.FC = () => {
       <MyTeamTopBar />
       <MyTeamTabStrip active={active} onChange={handleSubTabChange} />
       <View style={styles.body}>
-        <ActiveScreen />
+        <Animated.View
+          key={active}
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(150)}
+          style={styles.screenContainer}
+        >
+          <ActiveScreen />
+        </Animated.View>
       </View>
     </SafeAreaView>
   );
@@ -64,6 +77,14 @@ export const MyTeamNavigator: React.FC = () => {
 export { MY_TEAM_SUBTABS };
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg.primary },
-  body: { flex: 1 },
+  root: {
+    flex: 1,
+    backgroundColor: colors.bg.primary,
+  },
+  body: {
+    flex: 1,
+  },
+  screenContainer: {
+    flex: 1,
+  },
 });

@@ -7,6 +7,7 @@
  * itself is rendered inside MyTeamNavigator.
  */
 import React from "react";
+import { Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -33,7 +34,7 @@ const Tabs = createBottomTabNavigator<RootTabParamList>();
  * `Icon` component post-scaffold (e.g. lucide-react-native).
  */
 const TabIcon: React.FC<{ glyph: string; focused: boolean }> = ({ glyph }) => (
-  <>{glyph}</>
+  <Text>{glyph}</Text>
 );
 
 const BottomTabs: React.FC = () => (

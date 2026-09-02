@@ -11,9 +11,9 @@ import { Platform } from "react-native";
  */
 
 const sansFamily = Platform.select({
-  ios: "Inter", // shipped via expo-font in real build
-  android: "Inter",
-  default: "Inter",
+  ios: "System",
+  android: "sans-serif",
+  default: "System",
 });
 
 export const fontFamily = {

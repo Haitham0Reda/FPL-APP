@@ -10,61 +10,137 @@
  * the `useActiveTeam()` and `useCurrentGameweek()` hooks (Zustand
  * stores under `state/`).
  */
-import React from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, Pressable } from "react-native";
 
 import { Text } from "../components/primitives/Text";
 import { Pill } from "../components/primitives/Pill";
-import { colors, spacing } from "../theme";
+import { colors, spacing, radius } from "../theme";
 import { useActiveTeam } from "../state/useActiveTeam";
 import { useCurrentGameweek } from "../state/useCurrentGameweek";
+import { triggerHaptic } from "../services/haptic";
+
+const MIN_GW = 1;
+const MAX_GW = 38;
 
 export const MyTeamTopBar: React.FC = () => {
   const team = useActiveTeam();
   const { gameweek, setGameweek } = useCurrentGameweek();
+  const [teamSwitcherPressed, setTeamSwitcherPressed] = useState(false);
+
+  const handlePrevGW = () => {
+    if (gameweek > MIN_GW) {
+      triggerHaptic("selection");
+      setGameweek(gameweek - 1);
+    }
+  };
+
+  const handleNextGW = () => {
+    if (gameweek < MAX_GW) {
+      triggerHaptic("selection");
+      setGameweek(gameweek + 1);
+    }
+  };
+
+  const canGoPrev = gameweek > MIN_GW;
+  const canGoNext = gameweek < MAX_GW;
 
   return (
     <View style={styles.root}>
-      <View style={styles.row}>
+      {/* Team Switcher Row */}
+      <View style={styles.topRow}>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Switch team"
-          style={styles.teamSwitcher}
+          accessibilityLabel={`Switch team. Current team: ${team?.name ?? "No team"}`}
+          accessibilityHint="Opens team selection menu"
+          style={[
+            styles.teamSwitcher,
+            teamSwitcherPressed && styles.teamSwitcherPressed,
+          ]}
+          onPressIn={() => {
+            setTeamSwitcherPressed(true);
+            triggerHaptic("selection");
+          }}
+          onPressOut={() => setTeamSwitcherPressed(false)}
+          onPress={() => {
+            // TODO: Navigate to team switcher modal
+          }}
         >
-          {/* Avatar — circular badge with team initial. Replaced by a
-              real avatar component once image uploads land. */}
-          <View style={styles.avatar}>
+          <View
+            style={[
+              styles.avatar,
+              !team && styles.avatarEmpty,
+              teamSwitcherPressed && styles.avatarPressed,
+            ]}
+          >
             <Text style={styles.avatarText}>
               {(team?.name ?? "?").charAt(0).toUpperCase()}
             </Text>
           </View>
-          <Text style={styles.teamName} numberOfLines={1}>
-            {team?.name ?? "No team"}
-          </Text>
+          <View style={styles.teamInfo}>
+            <Text style={styles.teamName} numberOfLines={1}>
+              {team?.name ?? "No team"}
+            </Text>
+            {team && (
+              <Text style={styles.teamRank} numberOfLines={1}>
+                Rank: {team.overallRank?.toLocaleString() ?? "—"} • {team.totalPoints ?? 0} pts
+              </Text>
+            )}
+          </View>
           <Text style={styles.chevron}>▾</Text>
         </Pressable>
       </View>
 
-      <View style={styles.row}>
-        <Pill label="Value" value={team ? `£${team.value.toFixed(1)}m` : "—"} />
-        <Pill label="ITB" value={team ? `£${team.bank.toFixed(1)}m` : "—"} />
+      {/* Stats & GW Stepper Row */}
+      <View style={styles.bottomRow}>
+        <View style={styles.pillGroup}>
+          <Pill
+            label="VALUE"
+            value={team ? `£${team.value.toFixed(1)}m` : "—"}
+            emphasis="default"
+          />
+          <Pill
+            label="ITB"
+            value={team ? `£${team.bank.toFixed(1)}m` : "—"}
+            emphasis={team && team.bank > 0 ? "positive" : "default"}
+          />
+        </View>
+
         <View style={styles.gwStepper}>
           <Pressable
-            onPress={() => setGameweek(gameweek - 1)}
+            onPress={handlePrevGW}
+            disabled={!canGoPrev}
             accessibilityLabel="Previous gameweek"
-            style={styles.gwStepBtn}
+            accessibilityState={{ disabled: !canGoPrev }}
+            style={[styles.gwStepBtn, !canGoPrev && styles.gwStepBtnDisabled]}
           >
-            <Text style={styles.gwStepText}>‹</Text>
+            <Text
+              style={[
+                styles.gwStepText,
+                !canGoPrev && styles.gwStepTextDisabled,
+              ]}
+            >
+              ‹
+            </Text>
           </Pressable>
           <View style={styles.gwLabel}>
             <Text style={styles.gwLabelText}>GW{gameweek}</Text>
           </View>
           <Pressable
-            onPress={() => setGameweek(gameweek + 1)}
+            onPress={handleNextGW}
+            disabled={!canGoNext}
             accessibilityLabel="Next gameweek"
-            style={styles.gwStepBtn}
+            accessibilityState={{ disabled: !canGoNext }}
+            style={[styles.gwStepBtn, !canGoNext && styles.gwStepBtnDisabled]}
           >
-            <Text style={styles.gwStepText}>›</Text>
+            <Text
+              style={[
+                styles.gwStepText,
+                !canGoNext && styles.gwStepTextDisabled,
+              ]}
+            >
+              ›
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -76,43 +152,113 @@ const styles = StyleSheet.create({
   root: {
     backgroundColor: colors.bg.surface,
     borderBottomColor: colors.border.subtle,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: 1,
     paddingHorizontal: spacing.base,
-    paddingVertical: spacing.sm,
-    gap: spacing.sm,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.md,
+    gap: spacing.md,
   },
-  row: { flexDirection: "row", alignItems: "center", gap: spacing.sm },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  bottomRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   teamSwitcher: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.sm,
+    gap: spacing.md,
     flex: 1,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.xs,
+    borderRadius: radius.lg,
+    marginHorizontal: -spacing.xs,
+  },
+  teamSwitcherPressed: {
+    backgroundColor: colors.bg.surfaceRaised,
   },
   avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: colors.accent.primaryMuted,
+    borderWidth: 2,
+    borderColor: colors.accent.primary,
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarText: { color: colors.accent.primary, fontWeight: "700" },
+  avatarEmpty: {
+    borderColor: colors.border.subtle,
+    backgroundColor: colors.bg.surfaceRaised,
+  },
+  avatarPressed: {
+    transform: [{ scale: 0.95 }],
+  },
+  avatarText: {
+    color: colors.accent.primary,
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  teamInfo: {
+    flex: 1,
+    gap: 2,
+  },
   teamName: {
     color: colors.text.primary,
+    fontSize: 17,
+    fontWeight: "600",
+    letterSpacing: -0.2,
+  },
+  teamRank: {
+    color: colors.text.secondary,
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  chevron: {
+    color: colors.text.secondary,
     fontSize: 16,
     fontWeight: "600",
-    flex: 1,
   },
-  chevron: { color: colors.text.secondary, fontSize: 14 },
+  pillGroup: {
+    flexDirection: "row",
+    gap: spacing.sm,
+  },
   gwStepper: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: colors.bg.surfaceRaised,
-    borderRadius: 999,
+    borderRadius: radius.full,
     paddingHorizontal: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
   },
-  gwStepBtn: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
-  gwStepText: { color: colors.accent.primary, fontSize: 18, fontWeight: "700" },
-  gwLabel: { paddingHorizontal: spacing.sm },
-  gwLabelText: { color: colors.text.primary, fontSize: 14, fontWeight: "600" },
+  gwStepBtn: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.full,
+  },
+  gwStepBtnDisabled: {
+    opacity: 0.3,
+  },
+  gwStepText: {
+    color: colors.accent.primary,
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  gwStepTextDisabled: {
+    color: colors.text.secondary,
+  },
+  gwLabel: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  gwLabelText: {
+    color: colors.text.primary,
+    fontSize: 15,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
 });
