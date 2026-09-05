@@ -1,9 +1,11 @@
 /**
  * Button — primary CTA, secondary, ghost.
  * Emerald primary, surface raised secondary, transparent ghost.
+ * Primary CTAs use a subtle spring scale-down on press.
  */
 import React from "react";
 import { Pressable, StyleSheet } from "react-native";
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 import { Text } from "./Text";
 import { colors, spacing, radius } from "../../theme";
 export const Button = ({
@@ -14,14 +16,22 @@ export const Button = ({
   disabled,
   style
 }) => {
+  const scale = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }]
+  }));
   const containerStyle = [styles.base, VARIANT_BG[variant], fullWidth && styles.fullWidth, disabled && styles.disabled, style];
   const textTone = variant === "primary" ? "inverse" : variant === "danger" ? "inverse" : "default";
-  return <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" style={({
-    pressed
-  }) => [containerStyle, pressed && variant === "primary" && styles.pressed]}>
-      <Text preset="title" tone={textTone}>
-        {title}
-      </Text>
+  return <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" onPressIn={() => {
+    scale.value = withSpring(0.97, { damping: 15, stiffness: 300 });
+  }} onPressOut={() => {
+    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+  }} style={({ pressed }) => [containerStyle, pressed && variant === "primary" && styles.pressed]}>
+      <Animated.View style={animatedStyle}>
+        <Text preset="title" tone={textTone}>
+          {title}
+        </Text>
+      </Animated.View>
     </Pressable>;
 };
 const VARIANT_BG = {

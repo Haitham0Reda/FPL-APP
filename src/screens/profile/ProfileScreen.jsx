@@ -6,7 +6,9 @@
  */
 
 import React from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Text } from '@/components/primitives/Text';
 import { Card } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/Button';
@@ -14,6 +16,7 @@ import { colors } from '@/theme/colors';
 import { useTeamStore } from '@/state/useTeamStore';
 import { useSettingsStore } from '@/state/useSettingsStore';
 import { useAuthStore } from '@/state/useAuth';
+import { Check } from 'lucide-react-native';
 
 export function ProfileScreen({ navigation }) {
   const teams = useTeamStore(s => s.teams);
@@ -33,8 +36,14 @@ export function ProfileScreen({ navigation }) {
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bg.primary }}>
-      <View style={{ padding: 20 }}>
+    <View style={{ flex: 1 }}>
+      <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFillObject} />
+      <LinearGradient
+        colors={['rgba(16,185,129,0.06)', 'transparent', colors.bg.primary]}
+        style={StyleSheet.absoluteFillObject}
+      />
+      <ScrollView style={{ flex: 1 }}>
+        <View style={{ padding: 20 }}>
         <Text style={{ color: colors.text.primary, fontSize: 24, fontWeight: '700', marginBottom: 16 }}>
           Profile
         </Text>
@@ -128,29 +137,36 @@ export function ProfileScreen({ navigation }) {
             Language
           </Text>
           <View style={{ flexDirection: 'row', gap: 8 }}>
-            {['en', 'ar'].map(lang => (
-              <Pressable
-                key={lang}
-                onPress={() => setLanguage(lang)}
-                style={{
-                  flex: 1,
-                  paddingVertical: 10,
-                  borderRadius: 8,
-                  backgroundColor: language === lang ? colors.accent.primary : colors.bg.surface,
-                  borderWidth: 1,
-                  borderColor: language === lang ? colors.accent.primary : colors.border.subtle,
-                  alignItems: 'center',
-                }}
-              >
-                <Text style={{
-                  color: language === lang ? colors.bg.primary : colors.text.primary,
-                  fontSize: 14,
-                  fontWeight: '600',
-                }}>
-                  {lang === 'en' ? 'English' : 'العربية'}
-                </Text>
-              </Pressable>
-            ))}
+            {['en', 'ar'].map(lang => {
+              const isSelected = language === lang;
+              return (
+                <Pressable
+                  key={lang}
+                  onPress={() => setLanguage(lang)}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 10,
+                    borderRadius: 8,
+                    backgroundColor: isSelected ? colors.accent.primary : colors.bg.surface,
+                    borderWidth: isSelected ? 1.5 : 2,
+                    borderColor: isSelected ? colors.accent.primary : colors.border.subtle,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'row',
+                    gap: 6,
+                  }}
+                >
+                  {isSelected && <Check size={16} color={colors.text.onAccent} strokeWidth={2.5} />}
+                  <Text style={{
+                    color: isSelected ? colors.text.onAccent : colors.text.primary,
+                    fontSize: 14,
+                    fontWeight: '600',
+                  }}>
+                    {lang === 'en' ? 'English' : 'العربية'}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
         </Card>
 
@@ -179,5 +195,6 @@ export function ProfileScreen({ navigation }) {
         <Button title="Log Out" onPress={logout} variant="danger" />
       </View>
     </ScrollView>
+    </View>
   );
 }

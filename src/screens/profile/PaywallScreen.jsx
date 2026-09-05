@@ -5,7 +5,9 @@
  */
 
 import React from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Text } from '@/components/primitives/Text';
 import { Card } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/Button';
@@ -22,7 +24,12 @@ export function PaywallScreen({ navigation }) {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg.primary }}>
+    <View style={{ flex: 1 }}>
+      <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFillObject} />
+      <LinearGradient
+        colors={['rgba(16,185,129,0.06)', 'transparent', colors.bg.primary]}
+        style={StyleSheet.absoluteFillObject}
+      />
       <ScrollView contentContainerStyle={{ padding: 20, flexGrow: 1, justifyContent: 'center' }}>
         <View style={{ alignItems: 'center', marginBottom: 32 }}>
           <Text style={{
@@ -50,7 +57,7 @@ export function PaywallScreen({ navigation }) {
           </Text>
         </View>
 
-        <Card style={{ padding: 24, marginBottom: 24 }}>
+        <Card shadow elevation="overlay" padding="2xl" style={{ marginBottom: 24 }}>
           <Text style={{
             color: colors.text.primary,
             fontSize: 18,
@@ -70,7 +77,7 @@ export function PaywallScreen({ navigation }) {
           </Text>
         </Card>
 
-        <Card style={{ padding: 24, marginBottom: 24, backgroundColor: '#065F46', borderColor: '#10B981' }}>
+        <Card shadow elevation="overlay" padding="2xl" style={{ marginBottom: 24, backgroundColor: '#065F46', borderColor: '#10B981' }}>
           <Text style={{
             color: '#10B981',
             fontSize: 18,

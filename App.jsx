@@ -13,12 +13,16 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { View, Text, ActivityIndicator } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { queryClient } from "./src/app/queryClient";
 import { RootNavigator } from "./src/navigation/RootNavigator";
 import { colors, textStyle } from "./src/theme";
 import { usePlayerStore } from "./src/state/usePlayerStore";
 import { bootstrapApp } from "./src/utils/bootstrap";
+
+const BG_START = "rgba(16,185,129,0.06)";
+const BG_END = colors.bg.primary;
 
 const App = () => {
   const [bootstrapped, setBootstrapped] = useState(false);
@@ -60,24 +64,26 @@ const App = () => {
 
   if (!bootstrapped) {
     return (
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.bg.primary }}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
           <QueryClientProvider client={queryClient}>
             <StatusBar style="light" />
-            <View style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 32,
-            }}>
-              <Text style={[textStyle.headline, { color: colors.text.primary, marginBottom: 12 }]}>
-                Elite FPL
-              </Text>
-              <ActivityIndicator size="large" color={colors.accent.primary} />
-              <Text style={[textStyle.caption, { color: colors.text.secondary, marginTop: 16 }]}>
-                Loading players, teams & fixtures...
-              </Text>
-            </View>
+            <LinearGradient colors={[BG_START, BG_END]} style={{ flex: 1 }}>
+              <View style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 32,
+              }}>
+                <Text style={[textStyle.headline, { color: colors.text.primary, marginBottom: 12 }]}>
+                  Elite FPL
+                </Text>
+                <ActivityIndicator size="large" color={colors.accent.primary} />
+                <Text style={[textStyle.caption, { color: colors.text.secondary, marginTop: 16 }]}>
+                  Loading players, teams & fixtures...
+                </Text>
+              </View>
+            </LinearGradient>
           </QueryClientProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>
@@ -86,23 +92,25 @@ const App = () => {
 
   if (bootstrapError) {
     return (
-      <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.bg.primary }}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
           <QueryClientProvider client={queryClient}>
             <StatusBar style="light" />
-            <View style={{
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 32,
-            }}>
-              <Text style={[textStyle.headline, { color: colors.text.primary, marginBottom: 12 }]}>
-                Can't reach FPL
-              </Text>
-              <Text style={[textStyle.body, { color: colors.text.secondary, textAlign: 'center', marginBottom: 24 }]}>
-                {bootstrapError}. Check your connection and try again.
-              </Text>
-            </View>
+            <LinearGradient colors={[BG_START, BG_END]} style={{ flex: 1 }}>
+              <View style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 32,
+              }}>
+                <Text style={[textStyle.headline, { color: colors.text.primary, marginBottom: 12 }]}>
+                  Can't reach FPL
+                </Text>
+                <Text style={[textStyle.body, { color: colors.text.secondary, textAlign: 'center', marginBottom: 24 }]}>
+                  {bootstrapError}. Check your connection and try again.
+                </Text>
+              </View>
+            </LinearGradient>
           </QueryClientProvider>
         </SafeAreaProvider>
       </GestureHandlerRootView>
@@ -110,11 +118,13 @@ const App = () => {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.bg.primary }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <StatusBar style="light" />
-          <RootNavigator />
+          <LinearGradient colors={[BG_START, BG_END]} style={{ flex: 1 }}>
+            <RootNavigator />
+          </LinearGradient>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

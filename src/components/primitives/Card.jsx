@@ -12,11 +12,14 @@ const SPACING_MAP = {
   none: 0,
   sm: spacing.sm,
   base: spacing.base,
-  lg: spacing.lg
+  lg: spacing.lg,
+  xl: spacing.xl,
+  "2xl": spacing["2xl"]
 };
 export const Card = ({
   elevation = "raised",
   padding = "base",
+  shadow = false,
   style,
   children,
   ...rest
@@ -25,7 +28,7 @@ export const Card = ({
   return <View style={[styles.root, {
     backgroundColor: bg,
     padding: SPACING_MAP[padding]
-  }, elevation === "overlay" && styles.overlayBorder, style]} {...rest}>
+  }, elevation === "overlay" && styles.overlayBorder, shadow && styles.shadow, style]} {...rest}>
       {children}
     </View>;
 };
@@ -38,5 +41,11 @@ const styles = StyleSheet.create({
   overlayBorder: {
     borderColor: colors.border.subtle,
     borderWidth: 1
+  },
+  shadow: {
+    shadowColor: '#000',
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 12
   }
 });

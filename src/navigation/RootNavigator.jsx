@@ -19,6 +19,7 @@ import { WorkbookScreen } from "../screens/workbook/WorkbookScreen";
 import { ProfileScreen } from "../screens/profile/ProfileScreen";
 import { OnboardingScreen } from "../screens/onboarding/OnboardingScreen";
 import { TeamIdLoginScreen } from "../screens/onboarding/TeamIdLoginScreen";
+import { AddTeamScreen } from "../screens/onboarding/AddTeamScreen";
 import { PaywallScreen } from "../screens/profile/PaywallScreen";
 import { PlayerDetailScreen } from "../screens/myteam/PlayerDetailScreen";
 import { MyTeamNavigator } from "./MyTeamNavigator";
@@ -98,6 +99,11 @@ export const RootNavigator = () => (
       <RootStack.Screen
         name="TeamIdLogin"
         component={TeamIdLoginScreen}
+        options={{ presentation: "modal" }}
+      />
+      <RootStack.Screen
+        name="AddTeam"
+        component={AddTeamScreen}
         options={{ presentation: "modal" }}
       />
       <RootStack.Screen

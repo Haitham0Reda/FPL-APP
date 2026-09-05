@@ -36,6 +36,21 @@
   },
   "onboarding": {
     "welcome": "Welcome to Elite FPL",
-    "addTeam": "Add your first team"
+    "addTeam": "Add your first team",
+    "slide1Title": "Decision support, not a scoreboard",
+    "slide1Body": "Every recommendation shows its working — xPts, fixture swing, and form trend in one glance.",
+    "slide2Title": "Multi-team is a first-class primitive",
+    "slide2Body": "Live teams, drafts, comparisons — all in one place. Switch, fork, and manage without friction.",
+    "slide3Title": "Choose your preferred language",
+    "slide3Body": "Full English and Arabic support with automatic RTL layout.",
+    "continue": "Continue",
+    "getStarted": "Get Started",
+    "languageLabel": "Language",
+    "teamIdLabel": "FPL Team ID",
+    "teamIdPlaceholder": "e.g. 1234567",
+    "teamIdHelper": "Team IDs are 6–8 digits",
+    "teamIdValid": "Looks good",
+    "blankDraft": "Start a blank draft",
+    "connect": "Connect"
   }
 }
