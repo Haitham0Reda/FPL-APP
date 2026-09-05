@@ -173,7 +173,7 @@ const store = (set, get) => ({
 
     const reordered = [
       ...starting,
-      ...bench.map((b, i) => ({ ...b, benchOrder: i + 1 })],
+      ...bench.map((b, i) => ({ ...b, benchOrder: i + 1 })),
     ];
 
     const validFormation = get().findValidFormation(reordered);
@@ -288,7 +288,14 @@ const store = (set, get) => ({
   },
 });
 
-export const useDraftStore = persist(store, {
+const useDraftStore = create(persist(store, {
   name: 'elite-fpl-drafts',
   storage: createJSONStorage(() => AsyncStorage),
-});
+  version: 2,
+  migrate: (persistedState, version) => {
+    if (version < 2) return {};
+    return persistedState;
+  },
+}));
+
+export { useDraftStore };

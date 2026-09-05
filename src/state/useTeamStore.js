@@ -290,7 +290,14 @@ const store = (set, get) => ({
   },
 });
 
-export const useTeamStore = persist(store, {
+const useTeamStore = create(persist(store, {
   name: 'elite-fpl-teams',
   storage: createJSONStorage(() => AsyncStorage),
-});
+  version: 2,
+  migrate: (persistedState, version) => {
+    if (version < 2) return { teams: [], activeTeamId: null };
+    return persistedState;
+  },
+}));
+
+export { useTeamStore };

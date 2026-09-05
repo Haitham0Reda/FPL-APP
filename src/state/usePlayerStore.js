@@ -99,7 +99,14 @@ const store = (set, get) => ({
   }),
 });
 
-export const usePlayerStore = persist(store, {
+const usePlayerStore = create(persist(store, {
   name: 'elite-fpl-player-data',
   storage: createJSONStorage(() => AsyncStorage),
-});
+  version: 2,
+  migrate: (persistedState, version) => {
+    if (version < 2) return { ...persistedState, status: 'idle' };
+    return persistedState;
+  },
+}));
+
+export { usePlayerStore };

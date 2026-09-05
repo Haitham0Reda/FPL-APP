@@ -26,7 +26,14 @@ const store = (set, get) => ({
   }),
 });
 
-export const useSettingsStore = persist(store, {
+const useSettingsStore = create(persist(store, {
   name: 'elite-fpl-settings',
   storage: createJSONStorage(() => AsyncStorage),
-});
+  version: 2,
+  migrate: (persistedState, version) => {
+    if (version < 2) return {};
+    return persistedState;
+  },
+}));
+
+export { useSettingsStore };
