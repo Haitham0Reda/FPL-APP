@@ -77,7 +77,7 @@ export function ProfileScreen({ navigation }) {
                   fontSize: 14,
                   fontWeight: '600',
                 }}>
-                  {team.name}
+                  {String(team.name)}
                 </Text>
                 <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
                   {team.isLive ? 'Live' : 'Draft'} • GW{team.currentGameweek}
@@ -89,7 +89,7 @@ export function ProfileScreen({ navigation }) {
             </View>
           ))}
           <View style={{ flexDirection: 'row', gap: 8 }}>
-            <Button title="+ Draft" onPress={addDraftTeam} variant="secondary" style={{ flex: 1 }} />
+            <Button title="+ Draft" onPress={() => addDraftTeam()} variant="secondary" style={{ flex: 1 }} />
             <Button title="+ Live Team" onPress={handleAddLive} variant="secondary" style={{ flex: 1 }} />
           </View>
         </Card>

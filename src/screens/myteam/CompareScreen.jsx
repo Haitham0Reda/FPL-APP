@@ -129,7 +129,7 @@ export function CompareScreen() {
                 return (
                   <View key={id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 12 }}>
                     <Text style={{ color: colors.text.primary, fontSize: 14 }}>{player.web_name}</Text>
-                    <Text style={{ color: colors.text.secondary, fontSize: 12 }}>£{((player.now_cost || 0) / 10).toFixed(1)}m</Text>
+                    <Text style={{ color: colors.text.secondary, fontSize: 12 }}>£{(Number(player.now_cost || 0) / 10).toFixed(1)}m</Text>
                   </View>
                 );
               })}

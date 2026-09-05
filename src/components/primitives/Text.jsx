@@ -12,6 +12,7 @@
 import React from "react";
 import { Text as RNText, StyleSheet } from "react-native";
 import { colors, textStyle } from "../../theme";
+import { cssInterop } from "nativewind";
 export const Text = ({
   preset = "body",
   style,
@@ -31,3 +32,7 @@ export const Text = ({
     </RNText>;
 };
 export const styles = StyleSheet.create({});
+
+cssInterop(Text, {
+  className: "style"
+});

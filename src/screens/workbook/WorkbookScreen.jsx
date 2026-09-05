@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { View, ScrollView, Pressable, Share } from 'react-native';
+import { View, ScrollView, Pressable, Share, TextInput } from 'react-native';
 import { Text } from '@/components/primitives/Text';
 import { Card } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/Button';
@@ -16,11 +16,11 @@ import { usePlayerStore } from '@/state/usePlayerStore';
 const COLUMNS = [
   { key: 'web_name', label: 'Name', width: 1.2 },
   { key: 'position', label: 'Pos', width: 0.6 },
-  { key: 'now_cost', label: 'Price', width: 0.8, format: v => (v / 10).toFixed(1) },
-  { key: 'form', label: 'Form', width: 0.7, format: v => v?.toFixed(1) || '—' },
-  { key: 'xG', label: 'xG', width: 0.7, format: v => v?.toFixed(2) || '—' },
-  { key: 'xA', label: 'xA', width: 0.7, format: v => v?.toFixed(2) || '—' },
-  { key: 'xGI', label: 'xGI', width: 0.8, format: v => v?.toFixed(2) || '—' },
+  { key: 'now_cost', label: 'Price', width: 0.8, format: v => (Number(v) / 10).toFixed(1) },
+  { key: 'form', label: 'Form', width: 0.7, format: v => v != null ? Number(v).toFixed(1) : '—' },
+  { key: 'xG', label: 'xG', width: 0.7, format: v => v != null ? Number(v).toFixed(2) : '—' },
+  { key: 'xA', label: 'xA', width: 0.7, format: v => v != null ? Number(v).toFixed(2) : '—' },
+  { key: 'xGI', label: 'xGI', width: 0.8, format: v => v != null ? Number(v).toFixed(2) : '—' },
   { key: 'selected_by_percent', label: 'Own%', width: 0.8, format: v => `${v}%` },
   { key: 'status', label: 'Status', width: 0.7 },
 ];
@@ -230,7 +230,7 @@ export function WorkbookScreen() {
                     </View>
                   ) : col.key === 'now_cost' ? (
                     <Text style={{ color: colors.text.primary, fontSize: 13, fontWeight: '600' }}>
-                      £{((player[col.key] || 0) / 10).toFixed(1)}
+                      £{(Number(player[col.key] || 0) / 10).toFixed(1)}
                     </Text>
                   ) : col.key === 'selected_by_percent' ? (
                     <Text style={{ color: colors.text.primary, fontSize: 13 }}>
@@ -256,6 +256,4 @@ export function WorkbookScreen() {
   );
 }
 
-function TextInput(props) {
-  return <View {...props} />;
-}
+

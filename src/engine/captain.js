@@ -49,7 +49,7 @@ export function rankCaptains(candidates, options = {}) {
       factors.push({
         label: 'xPts',
         contribution: (xPtsResult.total / 10) * weights.xPtsWeight * 10,
-        detail: xPtsResult.total.toFixed(1),
+        detail: Number(xPtsResult.total || 0).toFixed(1),
       });
 
       // xGI factor
@@ -57,7 +57,7 @@ export function rankCaptains(candidates, options = {}) {
       factors.push({
         label: 'xGI',
         contribution: (xGI / 15) * weights.xGIWeight * 10,
-        detail: xGI.toFixed(2),
+        detail: Number(xGI).toFixed(2),
       });
 
       // Minutes factor
@@ -73,7 +73,7 @@ export function rankCaptains(candidates, options = {}) {
       factors.push({
         label: 'Form',
         contribution: form * weights.formWeight * 10,
-        detail: form.toFixed(1),
+        detail: Number(form).toFixed(1),
       });
 
       // Ownership factor (negative for differential mode)
@@ -84,7 +84,7 @@ export function rankCaptains(candidates, options = {}) {
       factors.push({
         label: 'Ownership',
         contribution: ownershipContrib,
-        detail: `${ownership.toFixed(1)}%`,
+        detail: `${Number(ownership).toFixed(1)}%`,
       });
 
       const score = factors.reduce((sum, f) => sum + f.contribution, 0);

@@ -6,8 +6,9 @@
  */
 
 import "react-native-gesture-handler";
+import "./global.css";
 import "./src/i18n";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Component } from "react";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -23,6 +24,43 @@ import { bootstrapApp } from "./src/utils/bootstrap";
 
 const BG_START = "rgba(16,185,129,0.06)";
 const BG_END = colors.bg.primary;
+
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, componentStack: '' };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('[ErrorBoundary]', error);
+    console.error('[ErrorBoundary] Component Stack:', errorInfo.componentStack);
+    this.setState({ componentStack: errorInfo.componentStack || '' });
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+          <Text style={{ color: colors.status.danger, fontSize: 18, fontWeight: '700', marginBottom: 12 }}>
+            Render Error
+          </Text>
+          <Text style={{ color: colors.text.secondary, fontSize: 13, marginBottom: 8 }}>
+            {this.state.error?.message || 'Unknown error'}
+          </Text>
+          <Text style={{ color: colors.text.secondary, fontSize: 11 }}>
+            {this.state.componentStack}
+          </Text>
+        </View>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const App = () => {
   const [bootstrapped, setBootstrapped] = useState(false);
@@ -123,7 +161,9 @@ const App = () => {
         <QueryClientProvider client={queryClient}>
           <StatusBar style="light" />
           <LinearGradient colors={[BG_START, BG_END]} style={{ flex: 1 }}>
-            <RootNavigator />
+            <ErrorBoundary>
+              <RootNavigator />
+            </ErrorBoundary>
           </LinearGradient>
         </QueryClientProvider>
       </SafeAreaProvider>

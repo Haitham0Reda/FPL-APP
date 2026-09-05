@@ -52,17 +52,17 @@ export function PlayerCard({ player, onPress, compact }) {
             {player.web_name || 'Unknown'}
           </Text>
           <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
-            {player.position || 'MID'} • £{((player.now_cost || 0) / 10).toFixed(1)}m
+            {player.position || 'MID'} • £{(Number(player.now_cost || 0) / 10).toFixed(1)}m
           </Text>
         </View>
       )}
 
       <View style={{ alignItems: 'flex-end', gap: 2 }}>
         <Text style={{ color: colors.text.primary, fontSize: 14, fontWeight: '600' }}>
-          {((player.now_cost || 0) / 10).toFixed(1)}
+          {(Number(player.now_cost || 0) / 10).toFixed(1)}
         </Text>
         <Text style={{ color: colors.text.secondary, fontSize: 11 }}>
-          {(player.form || 0).toFixed(1)} form
+          {Number(player.form || 0).toFixed(1)} form
         </Text>
       </View>
 

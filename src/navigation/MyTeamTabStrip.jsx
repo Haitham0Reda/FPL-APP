@@ -95,47 +95,37 @@ const TabPill = ({
 };
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: colors.bg.surface,
+    backgroundColor: colors.bg.primary,
     borderBottomColor: colors.border.subtle,
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
   },
   scroll: {
-    backgroundColor: "transparent"
+    backgroundColor: 'transparent',
   },
   container: {
-    paddingHorizontal: spacing.base,
-    paddingVertical: spacing.md,
-    gap: spacing.sm
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    gap: spacing.sm,
   },
   pill: {
-    paddingHorizontal: spacing.base,
-    paddingVertical: spacing.sm + 2,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     borderRadius: radius.full,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xs,
-    borderWidth: 1,
-    borderColor: "transparent",
-    backgroundColor: "transparent"
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   pillActive: {
-    backgroundColor: colors.accent.primaryMuted,
-    borderColor: colors.accent.primary
+    backgroundColor: colors.accent.primary,
   },
   label: {
     color: colors.text.secondary,
-    fontSize: 14,
-    fontWeight: "600",
-    letterSpacing: -0.1
+    fontSize: 13,
+    fontWeight: '600',
   },
   labelActive: {
-    color: colors.accent.primary,
-    fontWeight: "700"
+    color: colors.text.onAccent,
+    fontWeight: '700',
   },
   activeDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    backgroundColor: colors.accent.primary
-  }
+    display: 'none',
+  },
 });

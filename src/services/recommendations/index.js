@@ -52,16 +52,16 @@ export const rankCaptains = (candidates, options = {}) => {
   }) => {
     const factors = [{
       label: "Fixture",
-      contribution: w.fixtureDifficulty * projection.factors.fixtureDifficulty,
-      detail: `Difficulty ${projection.factors.fixtureDifficulty.toFixed(2)}`
+      contribution: w.fixtureDifficulty * (projection.factors.fixtureDifficulty || 0),
+      detail: `Difficulty ${Number(projection.factors.fixtureDifficulty || 0).toFixed(2)}`
     }, {
       label: "Form",
-      contribution: w.formWeight * projection.factors.formWeight,
-      detail: `Weight ${projection.factors.formWeight.toFixed(2)}`
+      contribution: w.formWeight * (projection.factors.formWeight || 0),
+      detail: `Weight ${Number(projection.factors.formWeight || 0).toFixed(2)}`
     }, {
       label: "Underlying stats",
-      contribution: w.underlyingStatsWeight * projection.factors.underlyingStatsWeight,
-      detail: `xGI ${player.xGI.toFixed(2)}`
+      contribution: w.underlyingStatsWeight * (projection.factors.underlyingStatsWeight || 0),
+      detail: `xGI ${Number(player.xGI || 0).toFixed(2)}`
     }, {
       label: "Minutes risk",
       contribution: w.minutesRisk * (1 - minutesRiskPenalty(player.minutesRisk)),

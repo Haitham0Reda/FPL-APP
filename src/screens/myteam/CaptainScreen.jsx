@@ -158,11 +158,11 @@ export function CaptainScreen() {
                     {player.web_name}
                   </Text>
                   <Text style={{ color: colors.text.secondary, fontSize: 13 }}>
-                    {player.position} • £{((player.now_cost || 0) / 10).toFixed(1)}m • {player.selected_by_percent}% owned
+                    {player.position} • £{(Number(player.now_cost || 0) / 10).toFixed(1)}m • {player.selected_by_percent}% owned
                   </Text>
                 </View>
                 <Text style={{ color: colors.accent.primary, fontSize: 18, fontWeight: '700' }}>
-                  {candidate.xpPts.toFixed(1)}
+                  {Number(candidate.xpPts || 0).toFixed(1)}
                 </Text>
               </View>
 

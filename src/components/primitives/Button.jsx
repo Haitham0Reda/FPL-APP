@@ -8,6 +8,7 @@ import { Pressable, StyleSheet } from "react-native";
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 import { Text } from "./Text";
 import { colors, spacing, radius } from "../../theme";
+import { cssInterop } from "nativewind";
 export const Button = ({
   title,
   onPress,
@@ -67,4 +68,8 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: 0.5
   }
+});
+
+cssInterop(Button, {
+  className: "style"
 });

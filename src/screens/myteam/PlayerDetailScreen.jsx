@@ -38,7 +38,7 @@ export function PlayerDetailScreen({ route, navigation }) {
   const xPtsByGW = useMemo(() => {
     return nextFixtures.map(f => ({
       gw: f.event,
-      xPts: ((player.form || 0) / 8) * 6,
+      xPts: (Number(player.form || 0) / 8) * 6,
     }));
   }, [nextFixtures, player.form]);
 
@@ -71,10 +71,10 @@ export function PlayerDetailScreen({ route, navigation }) {
         </View>
 
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
-          <StatPill label="Form" value={(player.form || 0).toFixed(1)} />
-          <StatPill label="xG" value={(player.xG || 0).toFixed(2)} />
-          <StatPill label="xA" value={(player.xA || 0).toFixed(2)} />
-          <StatPill label="xGI" value={(player.xGI || 0).toFixed(2)} />
+          <StatPill label="Form" value={Number(player.form || 0).toFixed(1)} />
+          <StatPill label="xG" value={Number(player.xG || 0).toFixed(2)} />
+          <StatPill label="xA" value={Number(player.xA || 0).toFixed(2)} />
+          <StatPill label="xGI" value={Number(player.xGI || 0).toFixed(2)} />
           <StatPill label="Ownership" value={`${player.selected_by_percent || 0}%`} />
           <StatPill label="Status" value={player.status === 'a' ? 'Available' : player.status?.toUpperCase() || '—'} />
         </View>

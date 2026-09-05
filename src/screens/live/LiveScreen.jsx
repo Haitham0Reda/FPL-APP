@@ -5,7 +5,7 @@
  * "The Grinders" mini-league table, BPS, owned-player events.
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
 import { Text } from '@/components/primitives/Text';
 import { Card } from '@/components/primitives/Card';
@@ -26,7 +26,7 @@ export function LiveScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const loadLive = async () => {
+  const loadLive = useCallback(async () => {
     const currentEvent = bootstrapData?.events?.find(e => e.is_current);
     if (!currentEvent) return;
     setLoading(true);
@@ -39,11 +39,11 @@ export function LiveScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [bootstrapData]);
 
   useEffect(() => {
     loadLive();
-  }, [currentEvent]);
+  }, [loadLive]);
 
   const livePointsMap = useMemo(() => {
     if (!liveData?.elements) return {};

@@ -18,197 +18,195 @@ import { colors, spacing, radius } from "../theme";
 import { useActiveTeam } from "../state/useActiveTeam";
 import { useCurrentGameweek } from "../state/useCurrentGameweek";
 import { triggerHaptic } from "../services/haptic";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 const MIN_GW = 1;
 const MAX_GW = 38;
 export const MyTeamTopBar = () => {
+  const insets = useSafeAreaInsets();
   const team = useActiveTeam();
-  const {
-    gameweek,
-    setGameweek
-  } = useCurrentGameweek();
+  const { gameweek, setGameweek } = useCurrentGameweek();
   const [teamSwitcherPressed, setTeamSwitcherPressed] = useState(false);
+
   const handlePrevGW = () => {
     if (gameweek > MIN_GW) {
       triggerHaptic("selection");
       setGameweek(gameweek - 1);
     }
   };
+
   const handleNextGW = () => {
     if (gameweek < MAX_GW) {
       triggerHaptic("selection");
       setGameweek(gameweek + 1);
     }
   };
+
   const canGoPrev = gameweek > MIN_GW;
   const canGoNext = gameweek < MAX_GW;
-  return <View style={styles.root}>
-      {/* Team Switcher Row */}
-      <View style={styles.topRow}>
-        <Pressable accessibilityRole="button" accessibilityLabel={`Switch team. Current team: ${team?.name ?? "No team"}`} accessibilityHint="Opens team selection menu" style={[styles.teamSwitcher, teamSwitcherPressed && styles.teamSwitcherPressed]} onPressIn={() => {
-        setTeamSwitcherPressed(true);
-        triggerHaptic("selection");
-      }} onPressOut={() => setTeamSwitcherPressed(false)} onPress={() => {
-        // TODO: Navigate to team switcher modal
-      }}>
-          <View style={[styles.avatar, !team && styles.avatarEmpty, teamSwitcherPressed && styles.avatarPressed]}>
-            <Text style={styles.avatarText}>
-              {(team?.name ?? "?").charAt(0).toUpperCase()}
-            </Text>
-          </View>
-          <View style={styles.teamInfo}>
-            <Text style={styles.teamName} numberOfLines={1}>
-              {team?.name ?? "No team"}
-            </Text>
-            {team && <Text style={styles.teamRank} numberOfLines={1}>
-                Rank: {team.overallRank?.toLocaleString() ?? "—"} • {team.totalPoints ?? 0} pts
-              </Text>}
-          </View>
-          <Text style={styles.chevron}>▾</Text>
-        </Pressable>
-      </View>
 
-      {/* Stats & GW Stepper Row */}
-      <View style={styles.bottomRow}>
-        <View style={styles.pillGroup}>
-          <Pill label="VALUE" value={team ? `£${team.value.toFixed(1)}m` : "—"} emphasis="default" />
-          <Pill label="ITB" value={team ? `£${team.bank.toFixed(1)}m` : "—"} emphasis={team && team.bank > 0 ? "positive" : "default"} />
-        </View>
+  return (
+    <View style={[styles.root, { paddingTop: Math.max(insets.top, spacing.md) }]}>
+      {/* Top Controls Row */}
+      <View style={styles.controlsRow}>
+        <Pressable
+          style={[styles.teamPicker, teamSwitcherPressed && styles.teamPickerPressed]}
+          onPressIn={() => setTeamSwitcherPressed(true)}
+          onPressOut={() => setTeamSwitcherPressed(false)}
+        >
+          <Text style={styles.teamNameText}>{team?.name ?? "No team"}</Text>
+          <Text style={styles.chevronIcon}>⌄</Text>
+        </Pressable>
 
         <View style={styles.gwStepper}>
-          <Pressable onPress={handlePrevGW} disabled={!canGoPrev} accessibilityLabel="Previous gameweek" accessibilityState={{
-          disabled: !canGoPrev
-        }} style={[styles.gwStepBtn, !canGoPrev && styles.gwStepBtnDisabled]}>
-            <Text style={[styles.gwStepText, !canGoPrev && styles.gwStepTextDisabled]}>
-              ‹
-            </Text>
+          <Pressable onPress={handlePrevGW} disabled={!canGoPrev} style={styles.stepBtn}>
+            <Text style={[styles.stepText, !canGoPrev && styles.stepDisabled]}>‹</Text>
           </Pressable>
-          <View style={styles.gwLabel}>
-            <Text style={styles.gwLabelText}>GW{gameweek}</Text>
+          <View style={styles.gwInfo}>
+            <Text style={styles.gwLabel}>GW</Text>
+            <Text style={styles.gwValue}>{gameweek}</Text>
           </View>
-          <Pressable onPress={handleNextGW} disabled={!canGoNext} accessibilityLabel="Next gameweek" accessibilityState={{
-          disabled: !canGoNext
-        }} style={[styles.gwStepBtn, !canGoNext && styles.gwStepBtnDisabled]}>
-            <Text style={[styles.gwStepText, !canGoNext && styles.gwStepTextDisabled]}>
-              ›
-            </Text>
+          <Pressable onPress={handleNextGW} disabled={!canGoNext} style={styles.stepBtn}>
+            <Text style={[styles.stepText, !canGoNext && styles.stepDisabled]}>›</Text>
           </Pressable>
         </View>
       </View>
-    </View>;
+
+      {/* Stats Row */}
+      <View style={styles.statsRow}>
+        <View style={styles.statItem}>
+          <Text style={styles.statLabel}>VALUE</Text>
+          <Text style={styles.statValue}>£{Number(team?.value || 0).toFixed(1)}m</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text style={styles.statLabel}>ITB</Text>
+          <Text style={styles.statValue}>£{Number(team?.bank || 0).toFixed(1)}m</Text>
+        </View>
+        <View style={styles.pointsBadge}>
+          <View style={styles.dot} />
+          <Text style={styles.pointsText}>{team?.totalPoints ?? 0} pts</Text>
+        </View>
+      </View>
+    </View>
+  );
 };
+
 const styles = StyleSheet.create({
   root: {
-    backgroundColor: colors.bg.surface,
-    borderBottomColor: colors.border.subtle,
-    borderBottomWidth: 1,
-    paddingHorizontal: spacing.base,
+    backgroundColor: colors.bg.primary,
+    paddingHorizontal: spacing.md,
     paddingTop: spacing.md,
-    paddingBottom: spacing.md,
-    gap: spacing.md
-  },
-  topRow: {
-    flexDirection: "row",
-    alignItems: "center"
-  },
-  bottomRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between"
-  },
-  teamSwitcher: {
-    flexDirection: "row",
-    alignItems: "center",
+    paddingBottom: spacing.sm,
     gap: spacing.md,
-    flex: 1,
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.xs,
-    borderRadius: radius.lg,
-    marginHorizontal: -spacing.xs
   },
-  teamSwitcherPressed: {
-    backgroundColor: colors.bg.surfaceRaised
+  controlsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: spacing.md,
   },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.accent.primaryMuted,
-    borderWidth: 2,
-    borderColor: colors.accent.primary,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  avatarEmpty: {
-    borderColor: colors.border.subtle,
-    backgroundColor: colors.bg.surfaceRaised
-  },
-  avatarPressed: {
-    transform: [{
-      scale: 0.95
-    }]
-  },
-  avatarText: {
-    color: colors.accent.primary,
-    fontSize: 18,
-    fontWeight: "700"
-  },
-  teamInfo: {
-    flex: 1,
-    gap: 2
-  },
-  teamName: {
-    color: colors.text.primary,
-    fontSize: 17,
-    fontWeight: "600",
-    letterSpacing: -0.2
-  },
-  teamRank: {
-    color: colors.text.secondary,
-    fontSize: 12,
-    fontWeight: "500"
-  },
-  chevron: {
-    color: colors.text.secondary,
-    fontSize: 16,
-    fontWeight: "600"
-  },
-  pillGroup: {
-    flexDirection: "row",
-    gap: spacing.sm
-  },
-  gwStepper: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.bg.surfaceRaised,
-    borderRadius: radius.full,
-    paddingHorizontal: spacing.xs,
-    borderWidth: 1,
-    borderColor: colors.border.subtle
-  },
-  gwStepBtn: {
+  teamPicker: {
+    flex: 1.5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.bg.surface,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderRadius: radius.full
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
   },
-  gwStepBtnDisabled: {
-    opacity: 0.3
+  teamPickerPressed: {
+    backgroundColor: colors.bg.surfaceRaised,
   },
-  gwStepText: {
-    color: colors.accent.primary,
-    fontSize: 20,
-    fontWeight: "700"
+  teamNameText: {
+    color: colors.text.primary,
+    fontSize: 16,
+    fontWeight: '700',
   },
-  gwStepTextDisabled: {
-    color: colors.text.secondary
+  chevronIcon: {
+    color: colors.text.secondary,
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  gwStepper: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.bg.surface,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
+  },
+  stepBtn: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+  },
+  stepText: {
+    color: colors.text.primary,
+    fontSize: 22,
+    fontWeight: '300',
+  },
+  stepDisabled: {
+    color: colors.text.secondary,
+    opacity: 0.3,
+  },
+  gwInfo: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.xs,
   },
   gwLabel: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs
+    color: colors.text.secondary,
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
-  gwLabelText: {
+  gwValue: {
+    color: colors.text.primary,
+    fontSize: 16,
+    fontWeight: '700',
+    marginTop: -2,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.lg,
+  },
+  statItem: {
+    gap: 2,
+  },
+  statLabel: {
+    color: colors.text.secondary,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  statValue: {
     color: colors.text.primary,
     fontSize: 15,
-    fontWeight: "700",
-    letterSpacing: 0.5
-  }
+    fontWeight: '700',
+  },
+  pointsBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.full,
+    gap: spacing.xs,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.status.danger,
+  },
+  pointsText: {
+    color: colors.status.danger,
+    fontSize: 13,
+    fontWeight: '700',
+  },
 });

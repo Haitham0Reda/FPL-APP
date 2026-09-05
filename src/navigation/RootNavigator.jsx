@@ -23,15 +23,24 @@ import { AddTeamScreen } from "../screens/onboarding/AddTeamScreen";
 import { PaywallScreen } from "../screens/profile/PaywallScreen";
 import { PlayerDetailScreen } from "../screens/myteam/PlayerDetailScreen";
 import { MyTeamNavigator } from "./MyTeamNavigator";
+import { useAuthStore } from "../state/useAuth";
+import { useTeamStore } from "../state/useTeamStore";
+import { Home, Shirt, Radio, BookOpen, User } from "lucide-react-native";
 
 const RootStack = createNativeStackNavigator();
 const Tabs = createBottomTabNavigator();
 
-const TabIcon = ({ glyph, focused }) => (
-  <Text style={{ color: focused ? colors.accent.primary : colors.text.secondary, fontSize: 18, fontWeight: '700' }}>
-    {glyph}
-  </Text>
-);
+const TabIcon = ({ name, focused }) => {
+  const Icon = {
+    Home: Home,
+    MyTeam: Shirt,
+    Live: Radio,
+    Workbook: BookOpen,
+    Profile: User,
+  }[name];
+
+  return <Icon size={22} color={focused ? colors.accent.primary : colors.text.secondary} strokeWidth={focused ? 2.5 : 2} />;
+};
 
 const BottomTabs = () => (
   <Tabs.Navigator
@@ -53,69 +62,85 @@ const BottomTabs = () => (
       name="Home"
       component={HomeScreen}
       options={{
-        tabBarIcon: ({ focused }) => <TabIcon glyph="H" focused={focused} />,
+        tabBarIcon: ({ focused }) => <TabIcon name="Home" focused={focused} />,
       }}
     />
     <Tabs.Screen
       name="MyTeam"
       component={MyTeamNavigator}
       options={{
-        tabBarIcon: ({ focused }) => <TabIcon glyph="T" focused={focused} />,
+        tabBarIcon: ({ focused }) => <TabIcon name="MyTeam" focused={focused} />,
       }}
     />
     <Tabs.Screen
       name="Live"
       component={LiveScreen}
       options={{
-        tabBarIcon: ({ focused }) => <TabIcon glyph="L" focused={focused} />,
+        tabBarIcon: ({ focused }) => <TabIcon name="Live" focused={focused} />,
       }}
     />
     <Tabs.Screen
       name="Workbook"
       component={WorkbookScreen}
       options={{
-        tabBarIcon: ({ focused }) => <TabIcon glyph="W" focused={focused} />,
+        tabBarIcon: ({ focused }) => <TabIcon name="Workbook" focused={focused} />,
       }}
     />
     <Tabs.Screen
       name="Profile"
       component={ProfileScreen}
       options={{
-        tabBarIcon: ({ focused }) => <TabIcon glyph="P" focused={focused} />,
+        tabBarIcon: ({ focused }) => <TabIcon name="Profile" focused={focused} />,
       }}
     />
   </Tabs.Navigator>
 );
 
-export const RootNavigator = () => (
-  <NavigationContainer>
-    <RootStack.Navigator screenOptions={{ headerShown: false }}>
-      <RootStack.Screen name="Tabs" component={BottomTabs} />
-      <RootStack.Screen
-        name="Onboarding"
-        component={OnboardingScreen}
-        options={{ presentation: "modal" }}
-      />
-      <RootStack.Screen
-        name="TeamIdLogin"
-        component={TeamIdLoginScreen}
-        options={{ presentation: "modal" }}
-      />
-      <RootStack.Screen
-        name="AddTeam"
-        component={AddTeamScreen}
-        options={{ presentation: "modal" }}
-      />
-      <RootStack.Screen
-        name="Paywall"
-        component={PaywallScreen}
-        options={{ presentation: "modal" }}
-      />
-      <RootStack.Screen
-        name="PlayerDetail"
-        component={PlayerDetailScreen}
-        options={{ presentation: "modal" }}
-      />
-    </RootStack.Navigator>
-  </NavigationContainer>
-);
+export const RootNavigator = () => {
+  const isLoggedIn = useAuthStore(s => s.isLoggedIn);
+  // Also consider logged in if they have any team (draft or live)
+  const hasTeams = useTeamStore(s => s.teams.length > 0);
+  const showOnboarding = !isLoggedIn && !hasTeams;
+
+  return (
+    <NavigationContainer>
+      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+        {showOnboarding ? (
+          <>
+            <RootStack.Screen name="Onboarding" component={OnboardingScreen} />
+            <RootStack.Screen name="AddTeam" component={AddTeamScreen} />
+            <RootStack.Screen
+              name="TeamIdLogin"
+              component={TeamIdLoginScreen}
+              options={{ presentation: "modal" }}
+            />
+          </>
+        ) : (
+          <>
+            <RootStack.Screen name="Tabs" component={BottomTabs} />
+            <RootStack.Screen
+              name="TeamIdLogin"
+              component={TeamIdLoginScreen}
+              options={{ presentation: "modal" }}
+            />
+            <RootStack.Screen
+              name="AddTeam"
+              component={AddTeamScreen}
+              options={{ presentation: "modal" }}
+            />
+          </>
+        )}
+        <RootStack.Screen
+          name="Paywall"
+          component={PaywallScreen}
+          options={{ presentation: "modal" }}
+        />
+        <RootStack.Screen
+          name="PlayerDetail"
+          component={PlayerDetailScreen}
+          options={{ presentation: "modal" }}
+        />
+      </RootStack.Navigator>
+    </NavigationContainer>
+  );
+};

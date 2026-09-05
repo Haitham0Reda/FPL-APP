@@ -191,7 +191,7 @@ export function TransfersScreen() {
                     {s.player.web_name}
                   </Text>
                   <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
-                    £{((s.player.now_cost || 0) / 10).toFixed(1)}m
+                    £{(Number(s.player.now_cost || 0) / 10).toFixed(1)}m
                   </Text>
                 </View>
               </Pressable>
@@ -236,7 +236,7 @@ export function TransfersScreen() {
                   {player.web_name}
                 </Text>
                 <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
-                  £{((player.now_cost || 0) / 10).toFixed(1)}m
+                  £{(Number(player.now_cost || 0) / 10).toFixed(1)}m
                 </Text>
               </View>
             </Pressable>
@@ -258,10 +258,10 @@ export function TransfersScreen() {
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
               <Text style={{ color: '#94A3B8', fontSize: 13 }}>
-                Projected gain: {projectedGain.toFixed(1)} pts
+                Projected gain: {Number(projectedGain || 0).toFixed(1)} pts
               </Text>
               <Text style={{ color: netAfterHit >= 0 ? '#10B981' : '#EF4444', fontSize: 13, fontWeight: '600' }}>
-                Net: {netAfterHit.toFixed(1)} pts
+                Net: {Number(netAfterHit || 0).toFixed(1)} pts
               </Text>
             </View>
             <Button

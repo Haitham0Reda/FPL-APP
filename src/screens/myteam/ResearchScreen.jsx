@@ -67,7 +67,7 @@ export function ResearchScreen() {
                     {p.web_name}
                   </Text>
                   <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
-                    {p.position} • £{((p.now_cost || 0) / 10).toFixed(1)}m
+                    {p.position} • £{(Number(p.now_cost || 0) / 10).toFixed(1)}m
                   </Text>
                 </View>
                 <View style={{ alignItems: 'flex-end' }}>

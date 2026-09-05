@@ -115,7 +115,7 @@ const store = (set, get) => ({
     const team = {
       id: generateId(),
       fplTeamId: null,
-      name,
+      name: typeof name === 'string' ? name : 'New Draft',
       isLive: false,
       overallRank: null,
       totalPoints: 0,

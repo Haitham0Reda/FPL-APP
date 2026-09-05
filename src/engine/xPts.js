@@ -17,7 +17,7 @@ export function calculateXPts(player, fixture, options = {}) {
   factors.push({
     label: 'Appearance',
     contribution: appearancePts,
-    detail: `${(startProb * 100).toFixed(0)}% start`,
+    detail: `${Number(startProb * 100).toFixed(0)}% start`,
   });
 
   // 2. Clean sheet probability (GK/DEF only)
@@ -28,7 +28,7 @@ export function calculateXPts(player, fixture, options = {}) {
     factors.push({
       label: 'Clean sheet',
       contribution: cleanSheetPts,
-      detail: `${(csProb * 100).toFixed(0)}% chance`,
+      detail: `${Number(csProb * 100).toFixed(0)}% chance`,
     });
   }
 
@@ -38,7 +38,7 @@ export function calculateXPts(player, fixture, options = {}) {
   factors.push({
     label: 'Goal',
     contribution: goalPts,
-    detail: `xG ${(player.xG || 0).toFixed(2)}`,
+    detail: `xG ${Number(player.xG || 0).toFixed(2)}`,
   });
 
   // 4. Assist probability
@@ -47,7 +47,7 @@ export function calculateXPts(player, fixture, options = {}) {
   factors.push({
     label: 'Assist',
     contribution: assistPts,
-    detail: `xA ${(player.xA || 0).toFixed(2)}`,
+    detail: `xA ${Number(player.xA || 0).toFixed(2)}`,
   });
 
   // 5. Bonus probability

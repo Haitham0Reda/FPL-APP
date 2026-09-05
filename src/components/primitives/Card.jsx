@@ -8,6 +8,8 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { colors, spacing, radius } from "../../theme";
+import { cssInterop } from "nativewind";
+
 const SPACING_MAP = {
   none: 0,
   sm: spacing.sm,
@@ -48,4 +50,8 @@ const styles = StyleSheet.create({
     shadowRadius: 24,
     elevation: 12
   }
+});
+
+cssInterop(Card, {
+  className: "style"
 });

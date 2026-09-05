@@ -37,19 +37,23 @@ export function TeamIdLoginScreen({
   const setTeamId = useAuthStore(s => s.setTeamId);
   const addLiveTeam = useTeamStore(s => s.addLiveTeam);
 
-  const handleValidate = useCallback(async () => {
+  const handleConnect = async () => {
     const teamId = parseInt(input.trim(), 10);
     if (!Number.isFinite(teamId) || teamId <= 0) {
-      setValid(null);
       setError('Enter a valid Team ID (numbers only).');
       return;
     }
+
     setError(null);
     setLoading(true);
     try {
       const exists = await validateTeamId(teamId);
       if (exists) {
         setValid(true);
+        await addLiveTeam(teamId);
+        setTeamId(teamId);
+        onSuccess?.();
+        navigation.goBack();
       } else {
         setValid(false);
         setError("Couldn't find that Team ID. Double-check it and try again.");
@@ -59,17 +63,6 @@ export function TeamIdLoginScreen({
       setError(err.message || 'Network error — check your connection and try again.');
     } finally {
       setLoading(false);
-    }
-  }, [input]);
-
-  const handleConnect = async () => {
-    await handleValidate();
-    const teamId = parseInt(input.trim(), 10);
-    if (valid) {
-      await addLiveTeam(teamId);
-      setTeamId(teamId);
-      onSuccess?.();
-      navigation.goBack();
     }
   };
 
