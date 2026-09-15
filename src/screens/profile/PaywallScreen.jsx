@@ -24,86 +24,62 @@ export function PaywallScreen({ navigation }) {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1">
       <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFillObject} />
       <LinearGradient
         colors={['rgba(16,185,129,0.06)', 'transparent', colors.bg.primary]}
         style={StyleSheet.absoluteFillObject}
       />
-      <ScrollView contentContainerStyle={{ padding: 20, flexGrow: 1, justifyContent: 'center' }}>
-        <View style={{ alignItems: 'center', marginBottom: 32 }}>
-          <Text style={{
-            fontSize: 48,
-            marginBottom: 16,
-          }}>
+      <ScrollView contentContainerClassName="p-5 grow justify-center">
+        <View className="items-center mb-8">
+          <Text className="text-5xl mb-4">
             👑
           </Text>
-          <Text style={{
-            color: colors.text.primary,
-            fontSize: 28,
-            fontWeight: '700',
-            marginBottom: 8,
-            textAlign: 'center',
-          }}>
+          <Text className="text-text-primary text-[28px] font-bold mb-2 text-center">
             Unlock Elite FPL Pro
           </Text>
-          <Text style={{
-            color: colors.text.secondary,
-            fontSize: 16,
-            textAlign: 'center',
-            lineHeight: 24,
-          }}>
+          <Text className="text-text-secondary text-base text-center leading-6">
             Unlimited teams, drafts, and advanced analytics.
           </Text>
         </View>
 
-        <Card shadow elevation="overlay" padding="2xl" style={{ marginBottom: 24 }}>
-          <Text style={{
-            color: colors.text.primary,
-            fontSize: 18,
-            fontWeight: '600',
-            marginBottom: 16,
-          }}>
+        <Card shadow elevation="overlay" padding="2xl" className="mb-6">
+          <Text className="text-text-primary text-lg font-semibold mb-4">
             Free tier
           </Text>
-          <Text style={{ color: colors.text.secondary, fontSize: 14, lineHeight: 22, marginBottom: 8 }}>
+          <Text className="text-text-secondary text-sm leading-[22px] mb-2">
             • 1 live team
           </Text>
-          <Text style={{ color: colors.text.secondary, fontSize: 14, lineHeight: 22, marginBottom: 8 }}>
+          <Text className="text-text-secondary text-sm leading-[22px] mb-2">
             • 2 drafts
           </Text>
-          <Text style={{ color: colors.text.secondary, fontSize: 14, lineHeight: 22 }}>
+          <Text className="text-text-secondary text-sm leading-[22px]">
             • Basic recommendations
           </Text>
         </Card>
 
-        <Card shadow elevation="overlay" padding="2xl" style={{ marginBottom: 24, backgroundColor: '#065F46', borderColor: '#10B981' }}>
-          <Text style={{
-            color: '#10B981',
-            fontSize: 18,
-            fontWeight: '600',
-            marginBottom: 16,
-          }}>
+        <Card shadow elevation="overlay" padding="2xl" className="mb-6 bg-[#065F46] border-primary">
+          <Text className="text-primary text-lg font-semibold mb-4">
             Pro tier (Demo)
           </Text>
-          <Text style={{ color: '#F8FAFC', fontSize: 14, lineHeight: 22, marginBottom: 8 }}>
+          <Text className="text-text-primary text-sm leading-[22px] mb-2">
             • Unlimited teams & drafts
           </Text>
-          <Text style={{ color: '#F8FAFC', fontSize: 14, lineHeight: 22, marginBottom: 8 }}>
+          <Text className="text-text-primary text-sm leading-[22px] mb-2">
             • Advanced xPts engine
           </Text>
-          <Text style={{ color: '#F8FAFC', fontSize: 14, lineHeight: 22, marginBottom: 8 }}>
+          <Text className="text-text-primary text-sm leading-[22px] mb-2">
             • Transfer solver
           </Text>
-          <Text style={{ color: '#F8FAFC', fontSize: 14, lineHeight: 22 }}>
+          <Text className="text-text-primary text-sm leading-[22px]">
             • Priority support
           </Text>
         </Card>
 
         <Button title={isPro ? 'Pro Active (Demo)' : 'Unlock Pro (Demo)'} onPress={handleUnlock} />
 
-        <Pressable onPress={() => navigation.goBack()} style={{ marginTop: 16, alignItems: 'center' }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 14 }}>
+        <Pressable onPress={() => navigation.goBack()} className="mt-4 items-center">
+          <Text className="text-text-secondary text-sm">
             Maybe later
           </Text>
         </Pressable>

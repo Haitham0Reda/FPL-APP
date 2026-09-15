@@ -10,12 +10,12 @@
  * sub-tab history.
  */
 import React, { useState, useCallback } from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { cssInterop } from "nativewind";
 import { MyTeamTabStrip, MY_TEAM_SUBTABS } from "./MyTeamTabStrip";
 import { MyTeamTopBar } from "./MyTeamTopBar";
-import { colors } from "../theme";
 import { SquadScreen } from "../screens/myteam/SquadScreen";
 import { FixturesScreen } from "../screens/myteam/FixturesScreen";
 import { CaptainScreen } from "../screens/myteam/CaptainScreen";
@@ -24,6 +24,9 @@ import { TransfersScreen } from "../screens/myteam/TransfersScreen";
 import { CompareScreen } from "../screens/myteam/CompareScreen";
 import { ResearchScreen } from "../screens/myteam/ResearchScreen";
 import { StrategyScreen } from "../screens/myteam/StrategyScreen";
+
+cssInterop(SafeAreaView, { className: "style" });
+
 const SUBTAB_SCREENS = {
   Squad: SquadScreen,
   Fixtures: FixturesScreen,
@@ -40,11 +43,11 @@ export const MyTeamNavigator = () => {
   const handleSubTabChange = useCallback(key => {
     setActive(key);
   }, []);
-  return <SafeAreaView style={styles.root} edges={["top"]}>
+  return <SafeAreaView className="flex-1 bg-secondary" edges={["top"]}>
       <MyTeamTopBar />
       <MyTeamTabStrip active={active} onChange={handleSubTabChange} />
-      <View style={styles.body}>
-        <Animated.View key={active} entering={FadeIn.duration(200)} exiting={FadeOut.duration(150)} style={styles.screenContainer}>
+      <View className="flex-1">
+        <Animated.View key={active} entering={FadeIn.duration(200)} exiting={FadeOut.duration(150)} style={{ flex: 1 }}>
           <ActiveScreen />
         </Animated.View>
       </View>
@@ -54,15 +57,3 @@ export const MyTeamNavigator = () => {
 // Re-export the ordered sub-tab list so other components (e.g. deep-link
 // config) can reference it without reaching into MyTeamTabStrip.
 export { MY_TEAM_SUBTABS };
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.bg.primary
-  },
-  body: {
-    flex: 1
-  },
-  screenContainer: {
-    flex: 1
-  }
-});

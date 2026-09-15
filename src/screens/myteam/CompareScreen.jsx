@@ -9,13 +9,11 @@ import React, { useState, useMemo } from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
 import { Text } from '@/components/primitives/Text';
 import { Card } from '@/components/primitives/Card';
-import { colors } from '@/theme/colors';
 import { useTeamStore } from '@/state/useTeamStore';
 import { usePlayerStore } from '@/state/usePlayerStore';
 
 export function CompareScreen() {
   const teams = useTeamStore(s => s.teams);
-  const activeTeam = useTeamStore(s => s.getActiveTeam());
   const playersById = usePlayerStore(s => s.playersById);
   const [teamAId, setTeamAId] = useState(null);
   const [teamBId, setTeamBId] = useState(null);
@@ -38,8 +36,8 @@ export function CompareScreen() {
 
   if (teams.length < 2) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg.primary, padding: 20 }}>
-        <Text style={{ color: colors.text.secondary }}>
+      <View className="flex-1 bg-secondary p-5">
+        <Text className="text-text-secondary">
           Create at least 2 teams or drafts to compare them.
         </Text>
       </View>
@@ -47,69 +45,47 @@ export function CompareScreen() {
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bg.primary }}>
-      <View style={{ padding: 20 }}>
-        <Text style={{ color: colors.text.primary, fontSize: 24, fontWeight: '700', marginBottom: 16 }}>
+    <ScrollView className="flex-1 bg-secondary">
+      <View className="p-5">
+        <Text className="text-text-primary text-2xl font-bold mb-4">
           Compare
         </Text>
 
-        <View style={{ flexDirection: 'row', gap: 12, marginBottom: 24 }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 8, textTransform: 'uppercase' }}>
+        <View className="flex-row gap-3 mb-6">
+          <View className="flex-1">
+            <Text className="text-text-secondary text-xs mb-2 uppercase">
               Team A
             </Text>
             {teams.map(t => (
               <Pressable
                 key={t.id}
                 onPress={() => setTeamAId(t.id)}
-                style={{
-                  padding: 12,
-                  marginBottom: 8,
-                  borderRadius: 8,
-                  backgroundColor: teamAId === t.id ? colors.accent.primaryMuted : colors.bg.surface,
-                  borderWidth: 1,
-                  borderColor: teamAId === t.id ? colors.accent.primary : colors.border.subtle,
-                }}
+                className={`p-3 mb-2 rounded-lg border ${teamAId === t.id ? 'bg-accent-muted border-primary' : 'bg-surface border-border'}`}
               >
-                <Text style={{
-                  color: teamAId === t.id ? colors.accent.primary : colors.text.primary,
-                  fontSize: 14,
-                  fontWeight: '600',
-                }}>
+                <Text className={`text-sm font-semibold ${teamAId === t.id ? 'text-primary' : 'text-text-primary'}`}>
                   {t.name}
                 </Text>
-                <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
+                <Text className="text-text-secondary text-xs">
                   {t.isLive ? 'Live' : 'Draft'}
                 </Text>
               </Pressable>
             ))}
           </View>
 
-          <View style={{ flex: 1 }}>
-            <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 8, textTransform: 'uppercase' }}>
+          <View className="flex-1">
+            <Text className="text-text-secondary text-xs mb-2 uppercase">
               Team B
             </Text>
             {teams.map(t => (
               <Pressable
                 key={t.id}
                 onPress={() => setTeamBId(t.id)}
-                style={{
-                  padding: 12,
-                  marginBottom: 8,
-                  borderRadius: 8,
-                  backgroundColor: teamBId === t.id ? colors.accent.primaryMuted : colors.bg.surface,
-                  borderWidth: 1,
-                  borderColor: teamBId === t.id ? colors.accent.primary : colors.border.subtle,
-                }}
+                className={`p-3 mb-2 rounded-lg border ${teamBId === t.id ? 'bg-accent-muted border-primary' : 'bg-surface border-border'}`}
               >
-                <Text style={{
-                  color: teamBId === t.id ? colors.accent.primary : colors.text.primary,
-                  fontSize: 14,
-                  fontWeight: '600',
-                }}>
+                <Text className={`text-sm font-semibold ${teamBId === t.id ? 'text-primary' : 'text-text-primary'}`}>
                   {t.name}
                 </Text>
-                <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
+                <Text className="text-text-secondary text-xs">
                   {t.isLive ? 'Live' : 'Draft'}
                 </Text>
               </Pressable>
@@ -119,48 +95,48 @@ export function CompareScreen() {
 
         {comparison && (
           <>
-            <Card style={{ padding: 16, marginBottom: 16 }}>
-              <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 8, textTransform: 'uppercase' }}>
+            <Card className="mb-4">
+              <Text className="text-text-secondary text-xs mb-2 uppercase">
                 Shared Players ({comparison.shared.length})
               </Text>
               {comparison.shared.map(id => {
                 const player = playersById[id];
                 if (!player) return null;
                 return (
-                  <View key={id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 12 }}>
-                    <Text style={{ color: colors.text.primary, fontSize: 14 }}>{player.web_name}</Text>
-                    <Text style={{ color: colors.text.secondary, fontSize: 12 }}>£{(Number(player.now_cost || 0) / 10).toFixed(1)}m</Text>
+                  <View key={id} className="flex-row items-center mb-2 gap-3">
+                    <Text className="text-text-primary text-sm">{player.web_name}</Text>
+                    <Text className="text-text-secondary text-xs">£{(Number(player.now_cost || 0) / 10).toFixed(1)}m</Text>
                   </View>
                 );
               })}
             </Card>
 
-            <View style={{ flexDirection: 'row', gap: 12 }}>
-              <Card style={{ flex: 1, padding: 16 }}>
-                <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 8, textTransform: 'uppercase' }}>
+            <View className="flex-row gap-3">
+              <Card className="flex-1">
+                <Text className="text-text-secondary text-xs mb-2 uppercase">
                   Only in {teamA.name}
                 </Text>
                 {comparison.onlyA.map(id => {
                   const player = playersById[id];
                   if (!player) return null;
                   return (
-                    <View key={id} style={{ marginBottom: 8 }}>
-                      <Text style={{ color: colors.text.primary, fontSize: 14 }}>{player.web_name}</Text>
+                    <View key={id} className="mb-2">
+                      <Text className="text-text-primary text-sm">{player.web_name}</Text>
                     </View>
                   );
                 })}
               </Card>
 
-              <Card style={{ flex: 1, padding: 16 }}>
-                <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 8, textTransform: 'uppercase' }}>
+              <Card className="flex-1">
+                <Text className="text-text-secondary text-xs mb-2 uppercase">
                   Only in {teamB.name}
                 </Text>
                 {comparison.onlyB.map(id => {
                   const player = playersById[id];
                   if (!player) return null;
                   return (
-                    <View key={id} style={{ marginBottom: 8 }}>
-                      <Text style={{ color: colors.text.primary, fontSize: 14 }}>{player.web_name}</Text>
+                    <View key={id} className="mb-2">
+                      <Text className="text-text-primary text-sm">{player.web_name}</Text>
                     </View>
                   );
                 })}

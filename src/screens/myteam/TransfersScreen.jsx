@@ -11,7 +11,6 @@ import { View, ScrollView, Pressable } from 'react-native';
 import { Text } from '@/components/primitives/Text';
 import { Card } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/Button';
-import { colors } from '@/theme/colors';
 import { useTeamStore } from '@/state/useTeamStore';
 import { usePlayerStore } from '@/state/usePlayerStore';
 import { useDraftStore } from '@/state/useDraftStore';
@@ -77,43 +76,31 @@ export function TransfersScreen() {
 
   if (!activeTeam) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg.primary, padding: 20 }}>
-        <Text style={{ color: colors.text.secondary }}>No team selected.</Text>
+      <View className="flex-1 bg-secondary p-5">
+        <Text className="text-text-secondary">No team selected.</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bg.primary }}>
-      <View style={{ padding: 20 }}>
-        <Text style={{ color: colors.text.primary, fontSize: 24, fontWeight: '700', marginBottom: 16 }}>
+    <ScrollView className="flex-1 bg-secondary">
+      <View className="p-5">
+        <Text className="text-text-primary text-2xl font-bold mb-4">
           Transfers
         </Text>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 8, textTransform: 'uppercase' }}>
+        <Card className="mb-4">
+          <Text className="text-text-secondary text-xs mb-2 uppercase">
             Horizon
           </Text>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View className="flex-row gap-2">
             {HORIZONS.map(h => (
               <Pressable
                 key={h}
                 onPress={() => setHorizon(h)}
-                style={{
-                  flex: 1,
-                  paddingVertical: 8,
-                  borderRadius: 8,
-                  backgroundColor: horizon === h ? colors.accent.primary : colors.bg.surface,
-                  borderWidth: 1,
-                  borderColor: horizon === h ? colors.accent.primary : colors.border.subtle,
-                  alignItems: 'center',
-                }}
+                className={`flex-1 py-2 rounded-lg border items-center ${horizon === h ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
               >
-                <Text style={{
-                  color: horizon === h ? colors.bg.primary : colors.text.primary,
-                  fontSize: 14,
-                  fontWeight: '600',
-                }}>
+                <Text className={`text-sm font-semibold ${horizon === h ? 'text-secondary' : 'text-text-primary'}`}>
                   {h} GW
                 </Text>
               </Pressable>
@@ -121,30 +108,18 @@ export function TransfersScreen() {
           </View>
         </Card>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 8, textTransform: 'uppercase' }}>
+        <Card className="mb-4">
+          <Text className="text-text-secondary text-xs mb-2 uppercase">
             Hit Tolerance
           </Text>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View className="flex-row gap-2">
             {HITS.map(h => (
               <Pressable
                 key={h}
                 onPress={() => setHit(h)}
-                style={{
-                  flex: 1,
-                  paddingVertical: 8,
-                  borderRadius: 8,
-                  backgroundColor: hit === h ? colors.accent.primary : colors.bg.surface,
-                  borderWidth: 1,
-                  borderColor: hit === h ? colors.accent.primary : colors.border.subtle,
-                  alignItems: 'center',
-                }}
+                className={`flex-1 py-2 rounded-lg border items-center ${hit === h ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
               >
-                <Text style={{
-                  color: hit === h ? colors.bg.primary : colors.text.primary,
-                  fontSize: 14,
-                  fontWeight: '600',
-                }}>
+                <Text className={`text-sm font-semibold ${hit === h ? 'text-secondary' : 'text-text-primary'}`}>
                   {h === 0 ? 'Free' : `${h} pts`}
                 </Text>
               </Pressable>
@@ -152,8 +127,8 @@ export function TransfersScreen() {
           </View>
         </Card>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 8, textTransform: 'uppercase' }}>
+        <Card className="mb-4">
+          <Text className="text-text-secondary text-xs mb-2 uppercase">
             Sell
           </Text>
           {squad.map(s => {
@@ -162,35 +137,18 @@ export function TransfersScreen() {
               <Pressable
                 key={s.playerId}
                 onPress={() => setSellId(s.playerId)}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: 12,
-                  marginBottom: 8,
-                  borderRadius: 8,
-                  backgroundColor: sellId === s.playerId ? colors.accent.primaryMuted : colors.bg.surface,
-                  borderWidth: 1,
-                  borderColor: sellId === s.playerId ? colors.accent.primary : colors.border.subtle,
-                  gap: 12,
-                }}
+                className={`flex-row items-center p-3 mb-2 rounded-lg border gap-3 ${sellId === s.playerId ? 'bg-accent-muted border-primary' : 'bg-surface border-border'}`}
               >
-                <View style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 16,
-                  backgroundColor: colors.border.subtle,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                  <Text style={{ color: colors.text.primary, fontSize: 12, fontWeight: '700' }}>
+                <View className="w-8 h-8 rounded-full bg-border items-center justify-center">
+                  <Text className="text-text-primary text-xs font-bold">
                     {s.player.web_name?.[0] || '?'}
                   </Text>
                 </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: colors.text.primary, fontSize: 14, fontWeight: '600' }}>
+                <View className="flex-1">
+                  <Text className="text-text-primary text-sm font-semibold">
                     {s.player.web_name}
                   </Text>
-                  <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
+                  <Text className="text-text-secondary text-xs">
                     £{(Number(s.player.now_cost || 0) / 10).toFixed(1)}m
                   </Text>
                 </View>
@@ -199,43 +157,26 @@ export function TransfersScreen() {
           })}
         </Card>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 8, textTransform: 'uppercase' }}>
+        <Card className="mb-4">
+          <Text className="text-text-secondary text-xs mb-2 uppercase">
             Buy
           </Text>
           {Object.values(playersById).slice(0, 20).map(player => (
             <Pressable
               key={player.id}
               onPress={() => setBuyId(String(player.id))}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 12,
-                marginBottom: 8,
-                borderRadius: 8,
-                backgroundColor: buyId === String(player.id) ? colors.accent.primaryMuted : colors.bg.surface,
-                borderWidth: 1,
-                borderColor: buyId === String(player.id) ? colors.accent.primary : colors.border.subtle,
-                gap: 12,
-              }}
+              className={`flex-row items-center p-3 mb-2 rounded-lg border gap-3 ${buyId === String(player.id) ? 'bg-accent-muted border-primary' : 'bg-surface border-border'}`}
             >
-              <View style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                backgroundColor: colors.border.subtle,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Text style={{ color: colors.text.primary, fontSize: 12, fontWeight: '700' }}>
+              <View className="w-8 h-8 rounded-full bg-border items-center justify-center">
+                <Text className="text-text-primary text-xs font-bold">
                   {player.web_name?.[0] || '?'}
                 </Text>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={{ color: colors.text.primary, fontSize: 14, fontWeight: '600' }}>
+              <View className="flex-1">
+                <Text className="text-text-primary text-sm font-semibold">
                   {player.web_name}
                 </Text>
-                <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
+                <Text className="text-text-secondary text-xs">
                   £{(Number(player.now_cost || 0) / 10).toFixed(1)}m
                 </Text>
               </View>
@@ -244,30 +185,30 @@ export function TransfersScreen() {
         </Card>
 
         {sellPlayer && buyPlayer && (
-          <Card style={{ padding: 16, marginBottom: 16, backgroundColor: '#065F46', borderColor: '#10B981' }}>
-            <Text style={{ color: '#10B981', fontSize: 12, marginBottom: 8, textTransform: 'uppercase' }}>
+          <Card className="mb-4 bg-[#065F46] border-primary">
+            <Text className="text-primary text-xs mb-2 uppercase">
               Projected Outcome
             </Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-              <Text style={{ color: '#F8FAFC', fontSize: 14 }}>
+            <View className="flex-row justify-between mb-2">
+              <Text className="text-text-primary text-sm">
                 Sell: {sellPlayer.web_name}
               </Text>
-              <Text style={{ color: '#F8FAFC', fontSize: 14 }}>
+              <Text className="text-text-primary text-sm">
                 Buy: {buyPlayer.web_name}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-              <Text style={{ color: '#94A3B8', fontSize: 13 }}>
+            <View className="flex-row justify-between mb-2">
+              <Text className="text-text-secondary text-[13px]">
                 Projected gain: {Number(projectedGain || 0).toFixed(1)} pts
               </Text>
-              <Text style={{ color: netAfterHit >= 0 ? '#10B981' : '#EF4444', fontSize: 13, fontWeight: '600' }}>
+              <Text className={`text-[13px] font-semibold ${netAfterHit >= 0 ? 'text-primary' : 'text-status-danger'}`}>
                 Net: {Number(netAfterHit || 0).toFixed(1)} pts
               </Text>
             </View>
             <Button
               title="Apply Transfer"
               onPress={handleApply}
-              style={{ marginTop: 12 }}
+              className="mt-3"
             />
           </Card>
         )}

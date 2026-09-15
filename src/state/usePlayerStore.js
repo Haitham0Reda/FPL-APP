@@ -9,6 +9,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getBootstrap, getFixtures } from '@/data/fpl/client';
+import { useCurrentGameweekStore } from './useCurrentGameweek';
 
 const store = (set, get) => ({
   // Raw API payloads
@@ -76,6 +77,18 @@ const store = (set, get) => ({
         error: null,
         lastUpdated: Date.now(),
       });
+
+      // Seed the shared "selected gameweek" store from real bootstrap data
+      // once, so the top-bar GW stepper and every screen scoped to it start
+      // on the actual current/next gameweek instead of a hardcoded GW1.
+      const gwState = useCurrentGameweekStore.getState();
+      if (!gwState.initializedFromApi) {
+        const events = bootstrapData.events || [];
+        const seedEvent = events.find(e => e.is_current) || events.find(e => e.is_next);
+        if (seedEvent) {
+          useCurrentGameweekStore.setState({ gameweek: seedEvent.id, initializedFromApi: true });
+        }
+      }
     } catch (err) {
       set({
         status: 'error',

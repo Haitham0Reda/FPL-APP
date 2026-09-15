@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, ScrollView, Pressable, Dimensions, ActivityIndicator } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
 import { Text } from '@/components/primitives/Text';
 import { Card } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/Button';
@@ -9,28 +10,69 @@ import { usePlayerStore } from '@/state/usePlayerStore';
 import { useFplBootstrap } from '@/hooks/useFplBootstrap';
 import { useNavigation } from '@react-navigation/native';
 import { useFixtures } from '@/hooks/useFplData';
+import { getEntryHistory } from '@/data/fpl/client';
+import { useCurrentGameweek } from '@/state/useCurrentGameweek';
 import { spacing, radius } from '@/theme';
 import { Bell, ChevronRight, TrendingUp } from 'lucide-react-native';
 import { MyTeamTopBar } from '@/navigation/MyTeamTopBar';
 
 const { width } = Dimensions.get('window');
 
+function formatCountdown(deadlineIso) {
+  if (!deadlineIso) return null;
+  const diffMs = new Date(deadlineIso).getTime() - Date.now();
+  if (diffMs <= 0) return null;
+  const totalMinutes = Math.floor(diffMs / 60000);
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = totalMinutes % 60;
+  return `${days}d ${hours}h ${minutes}m`;
+}
+
 export function HomeScreen() {
   const activeTeam = useTeamStore(s => s.getActiveTeam());
   const { data: bootstrapData, isLoading: isBootstrapLoading } = useFplBootstrap();
   const navigation = useNavigation();
+  const { gameweek } = useCurrentGameweek();
 
+  // The gameweek currently browsed via the top-bar stepper — drives the
+  // "GW{n} POINTS" card, the fixtures list, and the "FPL live" pill.
   const currentEvent = useMemo(() =>
+    bootstrapData?.events?.find(e => e.id === gameweek) ||
     bootstrapData?.events?.find(e => e.is_current) ||
     bootstrapData?.events?.find(e => e.is_next) ||
-    { id: 1, name: 'Gameweek 1' },
+    { id: gameweek || 1, name: `Gameweek ${gameweek || 1}` },
+  [bootstrapData, gameweek]);
+
+  // The next real deadline — independent of what GW is being browsed above.
+  // Once an event's deadline has passed, is_next moves on to the following
+  // one, so this always points at the next actionable deadline.
+  const deadlineEvent = useMemo(() =>
+    bootstrapData?.events?.find(e => e.is_next) ||
+    bootstrapData?.events?.find(e => !e.finished && new Date(e.deadline_time) > new Date()),
   [bootstrapData]);
 
-  const nextEvent = useMemo(() =>
-    bootstrapData?.events?.find(e => e.is_next),
-  [bootstrapData]);
+  const deadlineCountdown = useMemo(() => formatCountdown(deadlineEvent?.deadline_time), [deadlineEvent]);
 
   const { data: fixtures, isLoading: isFixturesLoading } = useFixtures(currentEvent?.id);
+
+  const fplTeamId = activeTeam?.fplTeamId;
+  const { data: historyData } = useQuery({
+    queryKey: ['fpl', 'entryHistory', fplTeamId],
+    queryFn: ({ signal }) => getEntryHistory(fplTeamId, signal),
+    enabled: !!fplTeamId,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const gwStats = useMemo(() => {
+    const rows = historyData?.current;
+    if (!rows || !currentEvent?.id) return null;
+    const currentRow = rows.find(r => r.event === currentEvent.id);
+    if (!currentRow) return null;
+    const prevRow = rows.find(r => r.event === currentEvent.id - 1);
+    const rankChange = prevRow ? prevRow.overall_rank - currentRow.overall_rank : null;
+    return { points: currentRow.points, rankChange };
+  }, [historyData, currentEvent]);
 
   const liveFixtures = useMemo(() => {
     if (!fixtures || !bootstrapData?.teams) return [];
@@ -52,7 +94,7 @@ export function HomeScreen() {
 
   if (isBootstrapLoading) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <View className="flex-1 bg-secondary" style={{ justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator color={colors.accent.primary} size="large" />
       </View>
     );
@@ -90,16 +132,26 @@ export function HomeScreen() {
         <View className="flex-row gap-4 mb-6">
           <Card className="flex-1 p-5 bg-surface rounded-2xl gap-1 justify-center min-h-[110px]">
             <Text className="text-text-secondary text-[10px] font-semibold tracking-wider">DEADLINE</Text>
-            <Text className="text-text-primary text-2xl font-bold">6d 15h 53m</Text>
-            <Text className="text-text-secondary text-xs font-medium">Gameweek {nextEvent?.id || currentEvent?.id + 1}</Text>
+            <Text className="text-text-primary text-2xl font-bold">{deadlineCountdown || 'Season complete'}</Text>
+            {deadlineEvent && (
+              <Text className="text-text-secondary text-xs font-medium">Gameweek {deadlineEvent.id}</Text>
+            )}
           </Card>
           <Card className="flex-1 p-5 bg-surface rounded-2xl gap-1 justify-center min-h-[110px]">
             <Text className="text-text-secondary text-[10px] font-semibold tracking-wider">GW{currentEvent?.id} POINTS</Text>
-            <Text className="text-text-primary text-[34px] font-bold">181</Text>
-            <View className="flex-row items-center gap-1 mt-0.5">
-              <TrendingUp size={12} color={colors.accent.primary} />
-              <Text className="text-emerald-500 text-xs font-semibold">+2406790 rank</Text>
-            </View>
+            <Text className="text-text-primary text-[20px] font-bold">{gwStats?.points ?? '–'}</Text>
+            {gwStats?.rankChange != null && (
+              <View className="flex-row items-center gap-1 mt-0.5">
+                <TrendingUp
+                  size={12}
+                  color={gwStats.rankChange >= 0 ? colors.accent.primary : colors.status.danger}
+                  style={gwStats.rankChange < 0 ? { transform: [{ rotate: '180deg' }] } : undefined}
+                />
+                <Text className={gwStats.rankChange >= 0 ? "text-emerald-500 text-xs font-semibold" : "text-red-500 text-xs font-semibold"}>
+                  {gwStats.rankChange >= 0 ? '+' : ''}{gwStats.rankChange.toLocaleString()} rank
+                </Text>
+              </View>
+            )}
           </Card>
         </View>
 

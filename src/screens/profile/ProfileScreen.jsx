@@ -24,7 +24,6 @@ export function ProfileScreen({ navigation }) {
   const setActiveTeam = useTeamStore(s => s.setActiveTeam);
   const deleteTeam = useTeamStore(s => s.deleteTeam);
   const addDraftTeam = useTeamStore(s => s.addDraftTeam);
-  const addLiveTeam = useTeamStore(s => s.addLiveTeam);
   const language = useSettingsStore(s => s.language);
   const setLanguage = useSettingsStore(s => s.setLanguage);
   const isPro = useSettingsStore(s => s.isPro);
@@ -36,132 +35,83 @@ export function ProfileScreen({ navigation }) {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1">
       <BlurView intensity={30} tint="dark" style={StyleSheet.absoluteFillObject} />
       <LinearGradient
         colors={['rgba(16,185,129,0.06)', 'transparent', colors.bg.primary]}
         style={StyleSheet.absoluteFillObject}
       />
-      <ScrollView style={{ flex: 1 }}>
-        <View style={{ padding: 20 }}>
-        <Text style={{ color: colors.text.primary, fontSize: 24, fontWeight: '700', marginBottom: 16 }}>
+      <ScrollView className="flex-1">
+        <View className="p-5">
+        <Text className="text-text-primary text-2xl font-bold mb-4">
           Profile
         </Text>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 12, textTransform: 'uppercase' }}>
+        <Card className="mb-4">
+          <Text className="text-text-secondary text-xs mb-3 uppercase">
             My Teams
           </Text>
           {teams.length === 0 && (
-            <Text style={{ color: colors.text.secondary, fontSize: 13, marginBottom: 12 }}>
+            <Text className="text-text-secondary text-[13px] mb-3">
               No teams yet. Connect your FPL Team ID or create a draft.
             </Text>
           )}
           {teams.map(team => (
-            <View key={team.id} style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: 12,
-              padding: 12,
-              borderRadius: 8,
-              backgroundColor: activeTeam?.id === team.id ? colors.accent.primaryMuted : colors.bg.surface,
-              borderWidth: 1,
-              borderColor: activeTeam?.id === team.id ? colors.accent.primary : colors.border.subtle,
-            }}>
+            <View key={team.id} className={`flex-row items-center mb-3 p-3 rounded-lg border ${activeTeam?.id === team.id ? 'bg-accent-muted border-primary' : 'bg-surface border-border'}`}>
               <Pressable
                 onPress={() => setActiveTeam(team.id)}
-                style={{ flex: 1 }}
+                className="flex-1"
               >
-                <Text style={{
-                  color: activeTeam?.id === team.id ? colors.accent.primary : colors.text.primary,
-                  fontSize: 14,
-                  fontWeight: '600',
-                }}>
+                <Text className={`text-sm font-semibold ${activeTeam?.id === team.id ? 'text-primary' : 'text-text-primary'}`}>
                   {String(team.name)}
                 </Text>
-                <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
+                <Text className="text-text-secondary text-xs">
                   {team.isLive ? 'Live' : 'Draft'} • GW{team.currentGameweek}
                 </Text>
               </Pressable>
-              <Pressable onPress={() => deleteTeam(team.id)} style={{ marginLeft: 8 }}>
-                <Text style={{ color: colors.status.danger, fontSize: 12 }}>Delete</Text>
+              <Pressable onPress={() => deleteTeam(team.id)} className="ml-2">
+                <Text className="text-status-danger text-xs">Delete</Text>
               </Pressable>
             </View>
           ))}
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <Button title="+ Draft" onPress={() => addDraftTeam()} variant="secondary" style={{ flex: 1 }} />
-            <Button title="+ Live Team" onPress={handleAddLive} variant="secondary" style={{ flex: 1 }} />
+          <View className="flex-row gap-2">
+            <Button title="+ Draft" onPress={() => addDraftTeam()} variant="secondary" className="flex-1" />
+            <Button title="+ Live Team" onPress={handleAddLive} variant="secondary" className="flex-1" />
           </View>
         </Card>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 12, textTransform: 'uppercase' }}>
+        <Card className="mb-4">
+          <Text className="text-text-secondary text-xs mb-3 uppercase">
             Pro Demo Unlock
           </Text>
           <Pressable
             onPress={togglePro}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: 12,
-              borderRadius: 8,
-              backgroundColor: colors.bg.surface,
-              borderWidth: 1,
-              borderColor: isPro ? colors.accent.primary : colors.border.subtle,
-            }}
+            className={`flex-row items-center justify-between p-3 rounded-lg bg-surface border ${isPro ? 'border-primary' : 'border-border'}`}
           >
-            <Text style={{ color: colors.text.primary, fontSize: 14, fontWeight: '600' }}>
+            <Text className="text-text-primary text-sm font-semibold">
               {isPro ? 'Pro Active (Demo)' : 'Unlock Pro (Demo)'}
             </Text>
-            <View style={{
-              width: 48,
-              height: 24,
-              borderRadius: 12,
-              backgroundColor: isPro ? colors.accent.primary : colors.border.subtle,
-              padding: 2,
-            }}>
-              <View style={{
-                width: 20,
-                height: 20,
-                borderRadius: 10,
-                backgroundColor: isPro ? colors.bg.primary : colors.text.secondary,
-                alignSelf: isPro ? 'flex-end' : 'flex-start',
-              }} />
+            <View className={`w-12 h-6 rounded-full p-0.5 ${isPro ? 'bg-primary' : 'bg-border'}`}>
+              <View className={`w-5 h-5 rounded-full ${isPro ? 'bg-secondary self-end' : 'bg-text-secondary self-start'}`} />
             </View>
           </Pressable>
         </Card>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 12, textTransform: 'uppercase' }}>
+        <Card className="mb-4">
+          <Text className="text-text-secondary text-xs mb-3 uppercase">
             Language
           </Text>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View className="flex-row gap-2">
             {['en', 'ar'].map(lang => {
               const isSelected = language === lang;
               return (
                 <Pressable
                   key={lang}
                   onPress={() => setLanguage(lang)}
-                  style={{
-                    flex: 1,
-                    paddingVertical: 10,
-                    borderRadius: 8,
-                    backgroundColor: isSelected ? colors.accent.primary : colors.bg.surface,
-                    borderWidth: isSelected ? 1.5 : 2,
-                    borderColor: isSelected ? colors.accent.primary : colors.border.subtle,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexDirection: 'row',
-                    gap: 6,
-                  }}
+                  className={`flex-1 py-2.5 rounded-lg border items-center justify-center flex-row gap-1.5 ${isSelected ? 'bg-primary border-primary border-[1.5px]' : 'bg-surface border-border border-2'}`}
                 >
                   {isSelected && <Check size={16} color={colors.text.onAccent} strokeWidth={2.5} />}
-                  <Text style={{
-                    color: isSelected ? colors.text.onAccent : colors.text.primary,
-                    fontSize: 14,
-                    fontWeight: '600',
-                  }}>
+                  <Text className={`text-sm font-semibold ${isSelected ? 'text-text-on-accent' : 'text-text-primary'}`}>
                     {lang === 'en' ? 'English' : 'العربية'}
                   </Text>
                 </Pressable>
@@ -170,24 +120,17 @@ export function ProfileScreen({ navigation }) {
           </View>
         </Card>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 12, textTransform: 'uppercase' }}>
+        <Card className="mb-4">
+          <Text className="text-text-secondary text-xs mb-3 uppercase">
             Settings
           </Text>
           {['Notifications', 'Biometric', 'Data Source', 'About'].map(item => (
             <Pressable
               key={item}
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingVertical: 12,
-                borderBottomColor: colors.border.subtle,
-                borderBottomWidth: 1,
-              }}
+              className="flex-row justify-between items-center py-3 border-b border-border"
             >
-              <Text style={{ color: colors.text.primary, fontSize: 14 }}>{item}</Text>
-              <Text style={{ color: colors.text.secondary, fontSize: 12 }}>{item === 'Notifications' ? 'On' : '—'}</Text>
+              <Text className="text-text-primary text-sm">{item}</Text>
+              <Text className="text-text-secondary text-xs">{item === 'Notifications' ? 'On' : '—'}</Text>
             </Pressable>
           ))}
         </Card>

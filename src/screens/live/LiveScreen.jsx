@@ -6,22 +6,20 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Text } from '@/components/primitives/Text';
 import { Card } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/Button';
-import { colors } from '@/theme/colors';
 import { useTeamStore } from '@/state/useTeamStore';
 import { usePlayerStore } from '@/state/usePlayerStore';
-import { useCurrentGameweek } from '@/state/useCurrentGameweek';
 import { useFplBootstrap } from '@/hooks/useFplBootstrap';
 import { getEventLive } from '@/data/fpl/client';
+import { getPlayerPosition } from '@/utils/players';
 
 export function LiveScreen() {
   const activeTeam = useTeamStore(s => s.getActiveTeam());
   const playersById = usePlayerStore(s => s.playersById);
   const { data: bootstrapData } = useFplBootstrap();
-  const currentGW = useCurrentGameweek();
   const [liveData, setLiveData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -66,43 +64,45 @@ export function LiveScreen() {
 
   if (!activeTeam) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg.primary, padding: 20 }}>
-        <Text style={{ color: colors.text.secondary }}>No team selected.</Text>
+      <View className="flex-1 bg-secondary p-5">
+        <Text className="text-text-secondary">No team selected.</Text>
       </View>
     );
   }
 
+  const currentEventId = bootstrapData?.events?.find(e => e.is_current)?.id;
+
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bg.primary }}>
-      <View style={{ padding: 20 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Text style={{ color: colors.text.primary, fontSize: 24, fontWeight: '700' }}>
+    <ScrollView className="flex-1 bg-secondary">
+      <View className="p-5">
+        <View className="flex-row justify-between items-center mb-4">
+          <Text className="text-text-primary text-2xl font-bold">
             Live
           </Text>
           <Button title={loading ? 'Refreshing...' : 'Refresh'} onPress={loadLive} variant="secondary" />
         </View>
 
         {error && (
-          <Card style={{ padding: 16, marginBottom: 16, backgroundColor: '#7C2D12', borderColor: colors.status.warning }}>
-            <Text style={{ color: colors.status.warning, fontSize: 14, marginBottom: 8 }}>
+          <Card className="mb-4 bg-[#7C2D12] border-status-warning">
+            <Text className="text-status-warning text-sm mb-2">
               {error}
             </Text>
             <Button title="Retry" onPress={loadLive} variant="secondary" />
           </Card>
         )}
 
-        <Card style={{ padding: 16, marginBottom: 16, backgroundColor: '#065F46', borderColor: '#10B981' }}>
-          <Text style={{ color: '#10B981', fontSize: 12, marginBottom: 4, textTransform: 'uppercase' }}>
-            GW {bootstrapData?.events?.find(e => e.is_current)?.name || '—'} Total
+        <Card className="mb-4 bg-[#065F46] border-primary">
+          <Text className="text-primary text-xs mb-1 uppercase">
+            {currentEventId ? `GW ${currentEventId} Total` : '— Total'}
           </Text>
-          <Text style={{ color: '#F8FAFC', fontSize: 36, fontWeight: '700' }}>
+          <Text className="text-text-primary text-[36px] leading-[44px] font-bold">
             {totalLivePoints}
           </Text>
-          <Text style={{ color: '#94A3B8', fontSize: 13 }}>Live points</Text>
+          <Text className="text-text-secondary text-[13px]">Live points</Text>
         </Card>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 12, textTransform: 'uppercase' }}>
+        <Card className="mb-4">
+          <Text className="text-text-secondary text-xs mb-3 uppercase">
             Starting XI
           </Text>
           {activeTeam.squad
@@ -114,35 +114,26 @@ export function LiveScreen() {
               const bps = live?.stats?.bps || 0;
 
               return (
-                <View key={s.playerId} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 12 }}>
-                  <View style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 18,
-                    backgroundColor: colors.bg.surface,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderWidth: 1,
-                    borderColor: colors.border.subtle,
-                  }}>
-                    <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text.primary }}>
+                <View key={s.playerId} className="flex-row items-center mb-3 gap-3">
+                  <View className="w-9 h-9 rounded-full bg-surface items-center justify-center border border-border">
+                    <Text className="text-sm font-bold text-text-primary">
                       {player?.web_name?.[0] || '?'}
                     </Text>
                   </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: colors.text.primary, fontSize: 14, fontWeight: '600' }}>
+                  <View className="flex-1">
+                    <Text className="text-text-primary text-sm font-semibold">
                       {player?.web_name || 'Unknown'}
                     </Text>
-                    <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
-                      {player?.position || 'MID'}
+                    <Text className="text-text-secondary text-xs">
+                      {player ? getPlayerPosition(player) : 'MID'}
                     </Text>
                   </View>
-                  <View style={{ alignItems: 'flex-end', gap: 2 }}>
-                    <Text style={{ color: colors.accent.primary, fontSize: 16, fontWeight: '700' }}>
+                  <View className="items-end gap-0.5">
+                    <Text className="text-primary text-base font-bold">
                       {points > 0 ? `+${points}` : '0'}
                     </Text>
                     {bps > 0 && (
-                      <Text style={{ color: colors.text.secondary, fontSize: 11 }}>
+                      <Text className="text-text-secondary text-[11px]">
                         BPS {bps}
                       </Text>
                     )}

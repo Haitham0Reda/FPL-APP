@@ -11,10 +11,9 @@
  * `Animated.View` content area.
  */
 import React, { useCallback } from "react";
-import { ScrollView, Pressable, StyleSheet, View } from "react-native";
+import { ScrollView, Pressable, View } from "react-native";
 import Animated, { useAnimatedStyle, withSpring, useSharedValue } from "react-native-reanimated";
 import { Text } from "../components/primitives/Text";
-import { colors, spacing, radius } from "../theme";
 import { triggerHaptic } from "../services/haptic";
 export const MY_TEAM_SUBTABS = [{
   key: "Squad",
@@ -41,7 +40,6 @@ export const MY_TEAM_SUBTABS = [{
   key: "Strategy",
   label: "Strategy"
 }];
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 export const MyTeamTabStrip = ({
   active,
   onChange
@@ -52,8 +50,13 @@ export const MyTeamTabStrip = ({
     }
     onChange(key);
   }, [active, onChange]);
-  return <View style={styles.wrapper}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.container} style={styles.scroll}>
+  return <View className="bg-secondary border-b border-border">
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerClassName="px-3 py-2 gap-2"
+        className="bg-transparent"
+      >
         {MY_TEAM_SUBTABS.map(tab => {
         const isActive = tab.key === active;
         return <TabPill key={tab.key} tab={tab} isActive={isActive} onPress={handlePress(tab.key)} />;
@@ -84,48 +87,20 @@ const TabPill = ({
       stiffness: 300
     });
   };
-  return <AnimatedPressable accessibilityRole="tab" accessibilityState={{
-    selected: isActive
-  }} accessibilityLabel={`${tab.label} tab${isActive ? ", selected" : ""}`} onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut} style={[styles.pill, isActive && styles.pillActive, animatedStyle]}>
-      <Text style={[styles.label, isActive && styles.labelActive]}>
-        {tab.label}
-      </Text>
-      {isActive && <View style={styles.activeDot} />}
-    </AnimatedPressable>;
+  return <Pressable
+    accessibilityRole="tab"
+    accessibilityState={{ selected: isActive }}
+    accessibilityLabel={`${tab.label} tab${isActive ? ", selected" : ""}`}
+    onPress={onPress}
+    onPressIn={handlePressIn}
+    onPressOut={handlePressOut}
+    className={`px-3 py-2 rounded-full ${isActive ? "bg-primary" : "bg-white/5"}`}
+  >
+      <Animated.View style={animatedStyle}>
+        <Text className={`text-[13px] font-semibold ${isActive ? "text-text-on-accent font-bold" : "text-text-secondary"}`}>
+          {tab.label}
+        </Text>
+        {isActive && <View className="hidden" />}
+      </Animated.View>
+    </Pressable>;
 };
-const styles = StyleSheet.create({
-  wrapper: {
-    backgroundColor: colors.bg.primary,
-    borderBottomColor: colors.border.subtle,
-    borderBottomWidth: 1,
-  },
-  scroll: {
-    backgroundColor: 'transparent',
-  },
-  container: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    gap: spacing.sm,
-  },
-  pill: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  pillActive: {
-    backgroundColor: colors.accent.primary,
-  },
-  label: {
-    color: colors.text.secondary,
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  labelActive: {
-    color: colors.text.onAccent,
-    fontWeight: '700',
-  },
-  activeDot: {
-    display: 'none',
-  },
-});

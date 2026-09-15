@@ -13,6 +13,10 @@ const MIN_GW = 1;
 const MAX_GW = 38;
 export const useCurrentGameweekStore = create(set => ({
   gameweek: 1,
+  // Flips true the first time we seed `gameweek` from real bootstrap data
+  // (see usePlayerStore.bootstrap()), so that seed only happens once and
+  // never clobbers the user's manual stepper navigation afterwards.
+  initializedFromApi: false,
   setGameweek: gw => {
     const clamped = Math.max(MIN_GW, Math.min(MAX_GW, Math.round(gw)));
     set({

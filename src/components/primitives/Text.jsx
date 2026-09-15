@@ -10,7 +10,7 @@
  * hand-roll fontSize / fontWeight / color directly.
  */
 import React from "react";
-import { Text as RNText, StyleSheet } from "react-native";
+import { Text as RNText } from "react-native";
 import { colors, textStyle } from "../../theme";
 import { cssInterop } from "nativewind";
 export const Text = ({
@@ -31,8 +31,6 @@ export const Text = ({
       {children}
     </RNText>;
 };
-export const styles = StyleSheet.create({});
-
 cssInterop(Text, {
   className: "style"
 });

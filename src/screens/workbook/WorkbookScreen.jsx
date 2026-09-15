@@ -12,17 +12,18 @@ import { Card } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/Button';
 import { colors } from '@/theme/colors';
 import { usePlayerStore } from '@/state/usePlayerStore';
+import { getPlayerPosition } from '@/utils/players';
 
 const COLUMNS = [
-  { key: 'web_name', label: 'Name', width: 1.2 },
-  { key: 'position', label: 'Pos', width: 0.6 },
-  { key: 'now_cost', label: 'Price', width: 0.8, format: v => (Number(v) / 10).toFixed(1) },
-  { key: 'form', label: 'Form', width: 0.7, format: v => v != null ? Number(v).toFixed(1) : '—' },
-  { key: 'xG', label: 'xG', width: 0.7, format: v => v != null ? Number(v).toFixed(2) : '—' },
-  { key: 'xA', label: 'xA', width: 0.7, format: v => v != null ? Number(v).toFixed(2) : '—' },
-  { key: 'xGI', label: 'xGI', width: 0.8, format: v => v != null ? Number(v).toFixed(2) : '—' },
-  { key: 'selected_by_percent', label: 'Own%', width: 0.8, format: v => `${v}%` },
-  { key: 'status', label: 'Status', width: 0.7 },
+  { key: 'web_name', label: 'Name', widthClass: 'w-[12%]' },
+  { key: 'position', label: 'Pos', widthClass: 'w-[6%]' },
+  { key: 'now_cost', label: 'Price', widthClass: 'w-[8%]', format: v => (Number(v) / 10).toFixed(1) },
+  { key: 'form', label: 'Form', widthClass: 'w-[7%]', format: v => v != null ? Number(v).toFixed(1) : '—' },
+  { key: 'xG', label: 'xG', widthClass: 'w-[7%]', format: v => v != null ? Number(v).toFixed(2) : '—' },
+  { key: 'xA', label: 'xA', widthClass: 'w-[7%]', format: v => v != null ? Number(v).toFixed(2) : '—' },
+  { key: 'xGI', label: 'xGI', widthClass: 'w-[8%]', format: v => v != null ? Number(v).toFixed(2) : '—' },
+  { key: 'selected_by_percent', label: 'Own%', widthClass: 'w-[8%]', format: v => `${v}%` },
+  { key: 'status', label: 'Status', widthClass: 'w-[7%]' },
 ];
 
 const POSITIONS = ['GK', 'DEF', 'MID', 'FWD'];
@@ -41,7 +42,7 @@ export function WorkbookScreen() {
     let list = Object.values(playersById);
 
     if (positionFilter) {
-      list = list.filter(p => p.position === positionFilter);
+      list = list.filter(p => getPlayerPosition(p) === positionFilter);
     }
     if (statusFilter) {
       list = list.filter(p => p.status === statusFilter);
@@ -79,7 +80,7 @@ export function WorkbookScreen() {
     const header = COLUMNS.map(c => c.label).join(',');
     const rows = players.map(p => {
       return COLUMNS.map(c => {
-        const val = p[c.key];
+        const val = c.key === 'position' ? getPlayerPosition(p) : p[c.key];
         if (c.format) return c.format(val);
         return val || '';
       }).join(',');
@@ -89,56 +90,38 @@ export function WorkbookScreen() {
   }, [players]);
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bg.primary }}>
-      <View style={{ padding: 20 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Text style={{ color: colors.text.primary, fontSize: 24, fontWeight: '700' }}>
+    <ScrollView className="flex-1 bg-secondary">
+      <View className="p-5">
+        <View className="flex-row justify-between items-center mb-4">
+          <Text className="text-text-primary text-2xl font-bold">
             Workbook
           </Text>
           <Button title="Export CSV" onPress={handleExportCSV} variant="secondary" />
         </View>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+        <Card className="mb-4">
+          <View className="flex-row flex-wrap gap-2 mb-3">
             {POSITIONS.map(pos => (
               <Pressable
                 key={pos}
                 onPress={() => setPositionFilter(positionFilter === pos ? null : pos)}
-                style={{
-                  paddingHorizontal: 12,
-                  paddingVertical: 6,
-                  borderRadius: 6,
-                  backgroundColor: positionFilter === pos ? colors.accent.primary : colors.bg.surface,
-                  borderWidth: 1,
-                  borderColor: positionFilter === pos ? colors.accent.primary : colors.border.subtle,
-                }}
+                className={`px-3 py-1.5 rounded border ${positionFilter === pos ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
               >
-                <Text style={{
-                  color: positionFilter === pos ? colors.bg.primary : colors.text.primary,
-                  fontSize: 12,
-                  fontWeight: '600',
-                }}>
+                <Text className={`text-xs font-semibold ${positionFilter === pos ? 'text-secondary' : 'text-text-primary'}`}>
                   {pos}
                 </Text>
               </Pressable>
             ))}
           </View>
 
-          <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
+          <View className="flex-row gap-2 mb-3">
             <TextInput
               placeholder="Min £"
               placeholderTextColor={colors.text.secondary}
               value={minPrice}
               onChangeText={setMinPrice}
               keyboardType="decimal-pad"
-              style={{
-                flex: 1,
-                backgroundColor: colors.bg.surface,
-                color: colors.text.primary,
-                borderRadius: 6,
-                padding: 8,
-                fontSize: 13,
-              }}
+              className="flex-1 bg-surface text-text-primary rounded p-2 text-[13px]"
             />
             <TextInput
               placeholder="Max £"
@@ -146,36 +129,18 @@ export function WorkbookScreen() {
               value={maxPrice}
               onChangeText={setMaxPrice}
               keyboardType="decimal-pad"
-              style={{
-                flex: 1,
-                backgroundColor: colors.bg.surface,
-                color: colors.text.primary,
-                borderRadius: 6,
-                padding: 8,
-                fontSize: 13,
-              }}
+              className="flex-1 bg-surface text-text-primary rounded p-2 text-[13px]"
             />
           </View>
 
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <View className="flex-row flex-wrap gap-2">
             {STATUSES.map(status => (
               <Pressable
                 key={status}
                 onPress={() => setStatusFilter(statusFilter === status ? null : status)}
-                style={{
-                  paddingHorizontal: 10,
-                  paddingVertical: 4,
-                  borderRadius: 4,
-                  backgroundColor: statusFilter === status ? colors.accent.primary : colors.bg.surface,
-                  borderWidth: 1,
-                  borderColor: statusFilter === status ? colors.accent.primary : colors.border.subtle,
-                }}
+                className={`px-2.5 py-1 rounded border ${statusFilter === status ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
               >
-                <Text style={{
-                  color: statusFilter === status ? colors.bg.primary : colors.text.primary,
-                  fontSize: 11,
-                  fontWeight: '600',
-                }}>
+                <Text className={`text-[11px] font-semibold ${statusFilter === status ? 'text-secondary' : 'text-text-primary'}`}>
                   {status.toUpperCase()}
                 </Text>
               </Pressable>
@@ -183,20 +148,15 @@ export function WorkbookScreen() {
           </View>
         </Card>
 
-        <Card style={{ padding: 0, overflow: 'hidden' }}>
-          <View style={{ flexDirection: 'row', borderBottomColor: colors.border.subtle, borderBottomWidth: 1 }}>
+        <Card padding="none" className="overflow-hidden">
+          <View className="flex-row border-b border-border">
             {COLUMNS.map(col => (
               <Pressable
                 key={col.key}
                 onPress={() => handleSort(col.key)}
-                style={{ width: `${col.width * 10}%`, padding: 12, backgroundColor: colors.bg.surface }}
+                className={`${col.widthClass} p-3 bg-surface`}
               >
-                <Text style={{
-                  color: colors.text.secondary,
-                  fontSize: 11,
-                  fontWeight: '600',
-                  textTransform: 'uppercase',
-                }}>
+                <Text className="text-text-secondary text-[11px] font-semibold uppercase">
                   {col.label} {sortKey === col.key ? (sortDir === 'asc' ? '↑' : '↓') : ''}
                 </Text>
               </Pressable>
@@ -204,40 +164,29 @@ export function WorkbookScreen() {
           </View>
 
           {players.map(player => (
-            <View key={player.id} style={{
-              flexDirection: 'row',
-              borderBottomColor: colors.border.subtle,
-              borderBottomWidth: 1,
-              paddingVertical: 10,
-            }}>
+            <View key={player.id} className="flex-row border-b border-border py-2.5">
               {COLUMNS.map(col => (
-                <View key={col.key} style={{ width: `${col.width * 10}%`, paddingHorizontal: 8, justifyContent: 'center' }}>
+                <View key={col.key} className={`${col.widthClass} px-2 justify-center`}>
                   {col.key === 'status' ? (
-                    <View style={{
-                      alignSelf: 'flex-start',
-                      paddingHorizontal: 6,
-                      paddingVertical: 2,
-                      borderRadius: 4,
-                      backgroundColor: player.status === 'a' ? colors.accent.primaryMuted : colors.status.warning,
-                    }}>
-                      <Text style={{
-                        color: player.status === 'a' ? colors.accent.primary : colors.text.primary,
-                        fontSize: 10,
-                        fontWeight: '700',
-                      }}>
+                    <View className={`self-start px-1.5 py-0.5 rounded ${player.status === 'a' ? 'bg-accent-muted' : 'bg-status-warning'}`}>
+                      <Text className={`text-[10px] font-bold ${player.status === 'a' ? 'text-primary' : 'text-text-primary'}`}>
                         {player.status?.toUpperCase() || '—'}
                       </Text>
                     </View>
                   ) : col.key === 'now_cost' ? (
-                    <Text style={{ color: colors.text.primary, fontSize: 13, fontWeight: '600' }}>
+                    <Text className="text-text-primary text-[13px] font-semibold">
                       £{(Number(player[col.key] || 0) / 10).toFixed(1)}
                     </Text>
                   ) : col.key === 'selected_by_percent' ? (
-                    <Text style={{ color: colors.text.primary, fontSize: 13 }}>
+                    <Text className="text-text-primary text-[13px]">
                       {player[col.key] || 0}%
                     </Text>
+                  ) : col.key === 'position' ? (
+                    <Text className="text-text-primary text-[13px]">
+                      {getPlayerPosition(player)}
+                    </Text>
                   ) : (
-                    <Text style={{ color: colors.text.primary, fontSize: 13 }}>
+                    <Text className="text-text-primary text-[13px]">
                       {col.format ? col.format(player[col.key]) : (player[col.key] || '—')}
                     </Text>
                   )}
@@ -246,8 +195,8 @@ export function WorkbookScreen() {
             </View>
           ))}
           {players.length === 0 && (
-            <View style={{ padding: 24, alignItems: 'center' }}>
-              <Text style={{ color: colors.text.secondary, fontSize: 14 }}>No players match your filters.</Text>
+            <View className="p-6 items-center">
+              <Text className="text-text-secondary text-sm">No players match your filters.</Text>
             </View>
           )}
         </Card>
@@ -255,5 +204,3 @@ export function WorkbookScreen() {
     </ScrollView>
   );
 }
-
-

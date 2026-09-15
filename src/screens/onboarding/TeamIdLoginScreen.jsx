@@ -9,8 +9,8 @@
  * elevated shadow, and expo-blur backdrop.
  */
 
-import React, { useState, useCallback } from 'react';
-import { View, TextInput, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Hash } from 'lucide-react-native';
@@ -22,7 +22,6 @@ import { useTeamStore } from '@/state/useTeamStore';
 import { useNavigation } from '@react-navigation/native';
 import { validateTeamId } from '@/hooks/useFplData';
 import { colors } from '@/theme/colors';
-import { spacing, radius } from '@/theme';
 
 export function TeamIdLoginScreen({
   onSuccess
@@ -66,40 +65,27 @@ export function TeamIdLoginScreen({
     }
   };
 
+  const inputHighlighted = focused || valid === true;
+
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1">
       <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFillObject} />
       <LinearGradient
         colors={['rgba(16,185,129,0.06)', 'transparent', colors.bg.primary]}
         style={StyleSheet.absoluteFillObject}
       />
 
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.xl }}>
-        <Card shadow elevation="overlay" padding="2xl" style={{ width: '100%', maxWidth: 340 }}>
-          <Text style={{
-            color: colors.text.primary,
-            fontSize: 24,
-            fontWeight: '700',
-            marginBottom: 8,
-            textAlign: 'center',
-          }}>
+      <View className="flex-1 justify-center items-center p-6">
+        <Card shadow elevation="overlay" padding="2xl" className="w-full max-w-[340px]">
+          <Text className="text-text-primary text-2xl font-bold mb-2 text-center">
             Connect your FPL team
           </Text>
-          <Text preset="body" style={{ color: colors.text.secondary, textAlign: 'center', marginBottom: spacing.xl }}>
+          <Text preset="body" className="text-text-secondary text-center mb-6">
             Enter your Team ID. You'll find it in the URL when viewing your team on the official FPL site — no password needed.
           </Text>
 
-          <View style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: colors.bg.surface,
-            borderRadius: radius.lg,
-            borderWidth: 1.5,
-            borderColor: focused ? colors.accent.primary : valid === true ? colors.accent.primary : colors.border.subtle,
-            paddingHorizontal: spacing.base,
-            marginBottom: spacing.sm,
-          }}>
-            <Hash size={20} color={focused || valid === true ? colors.accent.primary : colors.text.secondary} strokeWidth={2} />
+          <View className={`flex-row items-center bg-surface rounded-xl border-[1.5px] px-4 mb-2 ${inputHighlighted ? 'border-primary' : 'border-border'}`}>
+            <Hash size={20} color={inputHighlighted ? colors.accent.primary : colors.text.secondary} strokeWidth={2} />
             <TextInput
               value={input}
               onChangeText={setInput}
@@ -108,23 +94,17 @@ export function TeamIdLoginScreen({
               keyboardType="number-pad"
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
-              style={{
-                flex: 1,
-                color: colors.text.primary,
-                fontSize: 16,
-                paddingVertical: spacing.md,
-                paddingHorizontal: spacing.sm,
-              }}
+              className="flex-1 text-text-primary text-base py-3 px-2"
             />
           </View>
 
-          <View style={{ height: 20, marginBottom: spacing.md, justifyContent: 'center' }}>
-            {error && <Text style={{ color: colors.status.danger, fontSize: 13 }}>{error}</Text>}
+          <View className="h-5 mb-3 justify-center">
+            {error && <Text className="text-status-danger text-[13px]">{error}</Text>}
             {!error && valid === true && (
-              <Text style={{ color: colors.accent.primary, fontSize: 13 }}>Looks good</Text>
+              <Text className="text-primary text-[13px]">Looks good</Text>
             )}
             {!error && valid === null && !focused && input.length === 0 && (
-              <Text style={{ color: colors.text.secondary, fontSize: 13 }}>Team IDs are 6–8 digits</Text>
+              <Text className="text-text-secondary text-[13px]">Team IDs are 6–8 digits</Text>
             )}
           </View>
 

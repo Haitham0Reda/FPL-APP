@@ -10,7 +10,6 @@ import { View, ScrollView, Pressable } from 'react-native';
 import { Text } from '@/components/primitives/Text';
 import { Card } from '@/components/primitives/Card';
 import { Button } from '@/components/primitives/Button';
-import { colors } from '@/theme/colors';
 import { useTeamStore } from '@/state/useTeamStore';
 import { usePlayerStore } from '@/state/usePlayerStore';
 import { useDraftStore } from '@/state/useDraftStore';
@@ -64,55 +63,33 @@ export function CaptainScreen() {
 
   if (!activeTeam) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg.primary, padding: 20 }}>
-        <Text style={{ color: colors.text.secondary }}>No team selected.</Text>
+      <View className="flex-1 bg-secondary p-5">
+        <Text className="text-text-secondary">No team selected.</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bg.primary }}>
-      <View style={{ padding: 20 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Text style={{ color: colors.text.primary, fontSize: 24, fontWeight: '700' }}>
+    <ScrollView className="flex-1 bg-secondary">
+      <View className="p-5">
+        <View className="flex-row justify-between items-center mb-4">
+          <Text className="text-text-primary text-2xl font-bold">
             Captain
           </Text>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View className="flex-row gap-2">
             <Pressable
               onPress={() => setMode('balanced')}
-              style={{
-                paddingHorizontal: 12,
-                paddingVertical: 6,
-                borderRadius: 8,
-                backgroundColor: mode === 'balanced' ? colors.accent.primary : colors.bg.surface,
-                borderWidth: 1,
-                borderColor: mode === 'balanced' ? colors.accent.primary : colors.border.subtle,
-              }}
+              className={`px-3 py-1.5 rounded-lg border ${mode === 'balanced' ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
             >
-              <Text style={{
-                color: mode === 'balanced' ? colors.bg.primary : colors.text.primary,
-                fontSize: 12,
-                fontWeight: '600',
-              }}>
+              <Text className={`text-xs font-semibold ${mode === 'balanced' ? 'text-secondary' : 'text-text-primary'}`}>
                 Balanced
               </Text>
             </Pressable>
             <Pressable
               onPress={() => setMode('differential')}
-              style={{
-                paddingHorizontal: 12,
-                paddingVertical: 6,
-                borderRadius: 8,
-                backgroundColor: mode === 'differential' ? colors.accent.primary : colors.bg.surface,
-                borderWidth: 1,
-                borderColor: mode === 'differential' ? colors.accent.primary : colors.border.subtle,
-              }}
+              className={`px-3 py-1.5 rounded-lg border ${mode === 'differential' ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
             >
-              <Text style={{
-                color: mode === 'differential' ? colors.bg.primary : colors.text.primary,
-                fontSize: 12,
-                fontWeight: '600',
-              }}>
+              <Text className={`text-xs font-semibold ${mode === 'differential' ? 'text-secondary' : 'text-text-primary'}`}>
                 Differential
               </Text>
             </Pressable>
@@ -120,11 +97,11 @@ export function CaptainScreen() {
         </View>
 
         {activeTeam.captainId && (
-          <Card style={{ padding: 16, marginBottom: 16, backgroundColor: '#065F46', borderColor: '#10B981' }}>
-            <Text style={{ color: '#10B981', fontSize: 12, marginBottom: 4, textTransform: 'uppercase' }}>
+          <Card className="mb-4 bg-[#065F46] border-primary">
+            <Text className="text-primary text-xs mb-1 uppercase">
               Current Captain
             </Text>
-            <Text style={{ color: '#F8FAFC', fontSize: 18, fontWeight: '700' }}>
+            <Text className="text-text-primary text-lg font-bold">
               {playersById[activeTeam.captainId]?.web_name || 'Unknown'}
             </Text>
           </Card>
@@ -135,71 +112,58 @@ export function CaptainScreen() {
           if (!player) return null;
 
           return (
-            <Card key={candidate.playerId} style={{ padding: 16, marginBottom: 12 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                <View style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 16,
-                  backgroundColor: index === 0 ? colors.accent.primary : colors.bg.surface,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                  <Text style={{
-                    color: index === 0 ? colors.bg.primary : colors.text.primary,
-                    fontSize: 14,
-                    fontWeight: '700',
-                  }}>
+            <Card key={candidate.playerId} className="mb-3">
+              <View className="flex-row items-center gap-3 mb-3">
+                <View className={`w-8 h-8 rounded-full items-center justify-center ${index === 0 ? 'bg-primary' : 'bg-surface'}`}>
+                  <Text className={`text-sm font-bold ${index === 0 ? 'text-secondary' : 'text-text-primary'}`}>
                     {index + 1}
                   </Text>
                 </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: colors.text.primary, fontSize: 16, fontWeight: '600' }}>
+                <View className="flex-1">
+                  <Text className="text-text-primary text-base font-semibold">
                     {player.web_name}
                   </Text>
-                  <Text style={{ color: colors.text.secondary, fontSize: 13 }}>
+                  <Text className="text-text-secondary text-[13px]">
                     {player.position} • £{(Number(player.now_cost || 0) / 10).toFixed(1)}m • {player.selected_by_percent}% owned
                   </Text>
                 </View>
-                <Text style={{ color: colors.accent.primary, fontSize: 18, fontWeight: '700' }}>
+                <Text className="text-primary text-lg font-bold">
                   {Number(candidate.xpPts || 0).toFixed(1)}
                 </Text>
               </View>
 
-              <View style={{ marginBottom: 12 }}>
+              <View className="mb-3">
                 {candidate.factors.map((factor, i) => (
-                  <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4, gap: 8 }}>
-                    <Text style={{ color: colors.text.secondary, fontSize: 12, width: 80 }}>
+                  <View key={i} className="flex-row items-center mb-1 gap-2">
+                    <Text className="text-text-secondary text-xs w-20">
                       {factor.label}
                     </Text>
-                    <View style={{ flex: 1, height: 6, backgroundColor: colors.bg.surface, borderRadius: 3, overflow: 'hidden' }}>
-                      <View style={{
-                        width: `${Math.min(100, factor.contribution * 100)}%`,
-                        height: '100%',
-                        backgroundColor: colors.accent.primary,
-                        borderRadius: 3,
-                      }} />
+                    <View className="flex-1 h-1.5 bg-surface rounded-[3px] overflow-hidden">
+                      <View
+                        className="h-full bg-primary rounded-[3px]"
+                        style={{ width: `${Math.min(100, factor.contribution * 100)}%` }}
+                      />
                     </View>
-                    <Text style={{ color: colors.text.secondary, fontSize: 11, width: 60, textAlign: 'right' }}>
+                    <Text className="text-text-secondary text-[11px] w-16 text-right">
                       {factor.detail}
                     </Text>
                   </View>
                 ))}
               </View>
 
-              <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View className="flex-row gap-2">
                 <Button
                   title="Captain"
                   onPress={() => handleSetCaptain(candidate.playerId)}
                   disabled={activeTeam.captainId === candidate.playerId}
-                  style={{ flex: 1 }}
+                  className="flex-1"
                 />
                 <Button
                   title="Vice"
                   onPress={() => handleSetVice(candidate.playerId)}
                   disabled={activeTeam.viceCaptainId === candidate.playerId}
                   variant="secondary"
-                  style={{ flex: 1 }}
+                  className="flex-1"
                 />
               </View>
             </Card>

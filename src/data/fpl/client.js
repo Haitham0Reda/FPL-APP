@@ -14,6 +14,19 @@
 const BASE_URL = 'https://fantasy.premierleague.com/api';
 
 // ---------------------------------------------------------------------------
+// Error type — carries the HTTP status so callers can distinguish "not
+// found" (e.g. invalid team ID) from network/server failures.
+// ---------------------------------------------------------------------------
+
+export class FplApiError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.name = 'FplApiError';
+    this.status = status;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Low-level fetch helper with simple in-memory cache + TTL
 // ---------------------------------------------------------------------------
 
@@ -30,17 +43,22 @@ async function fplFetch(path, signal, ttlMs = 0) {
     cache.delete(url);
   }
 
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'User-Agent': 'EliteFPL/1.0',
-    },
-    signal,
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'User-Agent': 'EliteFPL/1.0',
+      },
+      signal,
+    });
+  } catch (err) {
+    throw new FplApiError(err.message || 'Network request failed', 0);
+  }
 
   if (!response.ok) {
-    throw new Error(`FPL API request failed: ${response.status} ${response.statusText}`);
+    throw new FplApiError(`FPL API request failed: ${response.status} ${response.statusText}`, response.status);
   }
 
   const data = await response.json();

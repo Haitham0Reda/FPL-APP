@@ -52,21 +52,21 @@ export function StrategyScreen() {
 
   if (!activeTeam) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg.primary, padding: 20 }}>
-        <Text style={{ color: colors.text.secondary }}>No team selected.</Text>
+      <View className="flex-1 bg-secondary p-5">
+        <Text className="text-text-secondary">No team selected.</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bg.primary }}>
-      <View style={{ padding: 20 }}>
-        <Text style={{ color: colors.text.primary, fontSize: 24, fontWeight: '700', marginBottom: 16 }}>
+    <ScrollView className="flex-1 bg-secondary">
+      <View className="p-5">
+        <Text className="text-text-primary text-2xl font-bold mb-4">
           Strategy
         </Text>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 8, textTransform: 'uppercase' }}>
+        <Card className="mb-4">
+          <Text className="text-text-secondary text-xs mb-2 uppercase">
             Add Note
           </Text>
           <TextInput
@@ -74,39 +74,19 @@ export function StrategyScreen() {
             onChangeText={setNoteText}
             placeholder="Write a note..."
             placeholderTextColor={colors.text.secondary}
-            style={{
-              backgroundColor: colors.bg.surface,
-              color: colors.text.primary,
-              borderRadius: 8,
-              padding: 12,
-              fontSize: 14,
-              marginBottom: 12,
-              minHeight: 80,
-              textAlignVertical: 'top',
-            }}
+            className="bg-surface text-text-primary rounded-lg p-3 text-sm mb-3 min-h-[80px]"
+            style={{ textAlignVertical: 'top' }}
             multiline
           />
 
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+          <View className="flex-row flex-wrap gap-2 mb-3">
             {TAGS.map(tag => (
               <Pressable
                 key={tag}
                 onPress={() => toggleTag(tag)}
-                style={{
-                  paddingHorizontal: 12,
-                  paddingVertical: 6,
-                  borderRadius: 6,
-                  backgroundColor: selectedTags.includes(tag) ? colors.accent.primary : colors.bg.surface,
-                  borderWidth: 1,
-                  borderColor: selectedTags.includes(tag) ? colors.accent.primary : colors.border.subtle,
-                }}
+                className={`px-3 py-1.5 rounded border ${selectedTags.includes(tag) ? 'bg-primary border-primary' : 'bg-surface border-border'}`}
               >
-                <Text style={{
-                  color: selectedTags.includes(tag) ? colors.bg.primary : colors.text.primary,
-                  fontSize: 12,
-                  fontWeight: '600',
-                  textTransform: 'capitalize',
-                }}>
+                <Text className={`text-xs font-semibold capitalize ${selectedTags.includes(tag) ? 'text-secondary' : 'text-text-primary'}`}>
                   {tag}
                 </Text>
               </Pressable>
@@ -117,40 +97,35 @@ export function StrategyScreen() {
         </Card>
 
         <View>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 12, textTransform: 'uppercase' }}>
+          <Text className="text-text-secondary text-xs mb-3 uppercase">
             Notes ({notes.length})
           </Text>
           {notes.map(note => (
-            <Card key={note.id} style={{ padding: 16, marginBottom: 12 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                <Text style={{ color: colors.text.primary, fontSize: 14, flex: 1 }}>
+            <Card key={note.id} className="mb-3">
+              <View className="flex-row justify-between items-start mb-2">
+                <Text className="text-text-primary text-sm flex-1">
                   {note.text}
                 </Text>
-                <Pressable onPress={() => deleteNote(note.id)} style={{ marginLeft: 8 }}>
-                  <Text style={{ color: colors.status.danger, fontSize: 12 }}>Delete</Text>
+                <Pressable onPress={() => deleteNote(note.id)} className="ml-2">
+                  <Text className="text-status-danger text-xs">Delete</Text>
                 </Pressable>
               </View>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+              <View className="flex-row flex-wrap gap-1.5">
                 {note.tags.map(tag => (
-                  <View key={tag} style={{
-                    paddingHorizontal: 8,
-                    paddingVertical: 4,
-                    borderRadius: 4,
-                    backgroundColor: colors.accent.primaryMuted,
-                  }}>
-                    <Text style={{ color: colors.accent.primary, fontSize: 11, textTransform: 'capitalize' }}>
+                  <View key={tag} className="px-2 py-1 rounded bg-accent-muted">
+                    <Text className="text-primary text-[11px] capitalize">
                       {tag}
                     </Text>
                   </View>
                 ))}
               </View>
-              <Text style={{ color: colors.text.secondary, fontSize: 11, marginTop: 8 }}>
+              <Text className="text-text-secondary text-[11px] mt-2">
                 {new Date(note.createdAt).toLocaleDateString()}
               </Text>
             </Card>
           ))}
           {notes.length === 0 && (
-            <Text style={{ color: colors.text.secondary, fontSize: 13 }}>
+            <Text className="text-text-secondary text-[13px]">
               No notes yet. Add your first strategy note above.
             </Text>
           )}

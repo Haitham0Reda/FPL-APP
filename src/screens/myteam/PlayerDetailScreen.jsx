@@ -6,23 +6,26 @@
  */
 
 import React, { useMemo } from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Text } from '@/components/primitives/Text';
 import { Card } from '@/components/primitives/Card';
-import { colors } from '@/theme/colors';
 import { usePlayerStore } from '@/state/usePlayerStore';
+import { getPlayerPosition } from '@/utils/players';
+
+const FDR_BG_CLASS = { 1: 'bg-fdr-1', 2: 'bg-fdr-2', 3: 'bg-fdr-3', 4: 'bg-fdr-4', 5: 'bg-fdr-5' };
 
 export function PlayerDetailScreen({ route, navigation }) {
   const playerId = route?.params?.playerId;
   const playersById = usePlayerStore(s => s.playersById);
+  const teamsById = usePlayerStore(s => s.teamsById);
   const fixturesByTeam = usePlayerStore(s => s.fixturesByTeam);
 
   const player = playersById[playerId];
 
   if (!player) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg.primary, padding: 20 }}>
-        <Text style={{ color: colors.text.secondary }}>Player not found.</Text>
+      <View className="flex-1 bg-secondary p-5">
+        <Text className="text-text-secondary">Player not found.</Text>
       </View>
     );
   }
@@ -43,34 +46,25 @@ export function PlayerDetailScreen({ route, navigation }) {
   }, [nextFixtures, player.form]);
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bg.primary }}>
-      <View style={{ padding: 20 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-          <View style={{
-            width: 56,
-            height: 56,
-            borderRadius: 28,
-            backgroundColor: colors.bg.surface,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderWidth: 1,
-            borderColor: colors.border.subtle,
-          }}>
-            <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text.primary }}>
+    <ScrollView className="flex-1 bg-secondary">
+      <View className="p-5">
+        <View className="flex-row items-center gap-4 mb-6">
+          <View className="w-14 h-14 rounded-full bg-surface items-center justify-center border border-border">
+            <Text className="text-xl font-bold text-text-primary">
               {player.web_name?.[0] || '?'}
             </Text>
           </View>
           <View>
-            <Text style={{ color: colors.text.primary, fontSize: 24, fontWeight: '700' }}>
+            <Text className="text-text-primary text-2xl font-bold">
               {player.web_name || 'Unknown'}
             </Text>
-            <Text style={{ color: colors.text.secondary, fontSize: 14 }}>
-              {player.position || 'MID'} • £{((player.now_cost || 0) / 10).toFixed(1)}m
+            <Text className="text-text-secondary text-sm">
+              {getPlayerPosition(player)} • £{((player.now_cost || 0) / 10).toFixed(1)}m
             </Text>
           </View>
         </View>
 
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
+        <View className="flex-row flex-wrap gap-3 mb-6">
           <StatPill label="Form" value={Number(player.form || 0).toFixed(1)} />
           <StatPill label="xG" value={Number(player.xG || 0).toFixed(2)} />
           <StatPill label="xA" value={Number(player.xA || 0).toFixed(2)} />
@@ -79,59 +73,52 @@ export function PlayerDetailScreen({ route, navigation }) {
           <StatPill label="Status" value={player.status === 'a' ? 'Available' : player.status?.toUpperCase() || '—'} />
         </View>
 
-        <Card style={{ padding: 16, marginBottom: 24 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 12, textTransform: 'uppercase' }}>
+        <Card className="mb-6">
+          <Text className="text-text-secondary text-xs mb-3 uppercase">
             Next 5 Fixtures
           </Text>
           {nextFixtures.map(f => {
             const isHome = f.team_h === player.team;
             const fdr = isHome ? f.team_h_difficulty : f.team_a_difficulty;
             const opponent = isHome
-              ? (playersById[f.team_a]?.name || '?')
-              : (playersById[f.team_h]?.name || '?');
+              ? (teamsById[String(f.team_a)]?.short_name || '?')
+              : (teamsById[String(f.team_h)]?.short_name || '?');
 
             return (
-              <View key={f.id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, gap: 12 }}>
-                <Text style={{ color: colors.text.secondary, fontSize: 12, width: 24 }}>
+              <View key={f.id} className="flex-row items-center mb-2 gap-3">
+                <Text className="text-text-secondary text-xs w-6">
                   GW{f.event}
                 </Text>
-                <View style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: colors.fdr[`fdr${fdr}`] || colors.fdr.fdr3,
-                }} />
-                <Text style={{ color: colors.text.primary, fontSize: 14, flex: 1 }}>
+                <View className={`w-2 h-2 rounded-full ${FDR_BG_CLASS[fdr] || FDR_BG_CLASS[3]}`} />
+                <Text className="text-text-primary text-sm flex-1">
                   {isHome ? 'vs' : '@'} {opponent}
                 </Text>
-                <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
+                <Text className="text-text-secondary text-xs">
                   FDR {fdr}
                 </Text>
               </View>
             );
           })}
           {nextFixtures.length === 0 && (
-            <Text style={{ color: colors.text.secondary, fontSize: 13 }}>No upcoming fixtures.</Text>
+            <Text className="text-text-secondary text-[13px]">No upcoming fixtures.</Text>
           )}
         </Card>
 
-        <Card style={{ padding: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 12, textTransform: 'uppercase' }}>
+        <Card>
+          <Text className="text-text-secondary text-xs mb-3 uppercase">
             xPts Projection
           </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'flex-end', height: 120, gap: 8 }}>
+          <View className="flex-row items-end h-[120px] gap-2">
             {xPtsByGW.map(item => (
-              <View key={item.gw} style={{ flex: 1, alignItems: 'center' }}>
-                <Text style={{ color: colors.text.primary, fontSize: 11, marginBottom: 4 }}>
+              <View key={item.gw} className="flex-1 items-center">
+                <Text className="text-text-primary text-[11px] mb-1">
                   {item.xPts.toFixed(1)}
                 </Text>
-                <View style={{
-                  width: '100%',
-                  height: Math.max(8, item.xPts * 16),
-                  backgroundColor: colors.accent.primary,
-                  borderRadius: 4,
-                }} />
-                <Text style={{ color: colors.text.secondary, fontSize: 10, marginTop: 4 }}>
+                <View
+                  className="w-full bg-primary rounded"
+                  style={{ height: Math.max(8, item.xPts * 16) }}
+                />
+                <Text className="text-text-secondary text-[10px] mt-1">
                   {item.gw}
                 </Text>
               </View>
@@ -145,18 +132,11 @@ export function PlayerDetailScreen({ route, navigation }) {
 
 function StatPill({ label, value }) {
   return (
-    <View style={{
-      paddingHorizontal: 12,
-      paddingVertical: 8,
-      borderRadius: 8,
-      backgroundColor: colors.bg.surface,
-      borderWidth: 1,
-      borderColor: colors.border.subtle,
-    }}>
-      <Text style={{ color: colors.text.secondary, fontSize: 11, marginBottom: 2, textTransform: 'uppercase' }}>
+    <View className="px-3 py-2 rounded-lg bg-surface border border-border">
+      <Text className="text-text-secondary text-[11px] mb-0.5 uppercase">
         {label}
       </Text>
-      <Text style={{ color: colors.text.primary, fontSize: 16, fontWeight: '700' }}>
+      <Text className="text-text-primary text-base font-bold">
         {value}
       </Text>
     </View>

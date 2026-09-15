@@ -7,15 +7,14 @@
  *
  * The bars are surfaced as separate <Pill /> primitives in
  * `components/primitives/Pill.tsx`. Read-side data is wired through
- * the `useActiveTeam()` and `useCurrentGameweek()` hooks (Zustand
- * stores under `state/`).
+ * `useTeamStore().getActiveTeam()` and the `useCurrentGameweek()` hook
+ * (Zustand stores under `state/`).
  */
-import React, { useState } from "react";
-import { View, StyleSheet, Pressable } from "react-native";
+import React from "react";
+import { View, Pressable } from "react-native";
 import { Text } from "../components/primitives/Text";
-import { Pill } from "../components/primitives/Pill";
-import { colors, spacing, radius } from "../theme";
-import { useActiveTeam } from "../state/useActiveTeam";
+import { spacing } from "../theme";
+import { useTeamStore } from "../state/useTeamStore";
 import { useCurrentGameweek } from "../state/useCurrentGameweek";
 import { triggerHaptic } from "../services/haptic";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -24,9 +23,8 @@ const MIN_GW = 1;
 const MAX_GW = 38;
 export const MyTeamTopBar = () => {
   const insets = useSafeAreaInsets();
-  const team = useActiveTeam();
+  const team = useTeamStore(s => s.getActiveTeam());
   const { gameweek, setGameweek } = useCurrentGameweek();
-  const [teamSwitcherPressed, setTeamSwitcherPressed] = useState(false);
 
   const handlePrevGW = () => {
     if (gameweek > MIN_GW) {
@@ -46,167 +44,43 @@ export const MyTeamTopBar = () => {
   const canGoNext = gameweek < MAX_GW;
 
   return (
-    <View style={[styles.root, { paddingTop: Math.max(insets.top, spacing.md) }]}>
+    <View className="bg-secondary px-3 pb-2 gap-3" style={{ paddingTop: Math.max(insets.top, spacing.md) }}>
       {/* Top Controls Row */}
-      <View style={styles.controlsRow}>
-        <Pressable
-          style={[styles.teamPicker, teamSwitcherPressed && styles.teamPickerPressed]}
-          onPressIn={() => setTeamSwitcherPressed(true)}
-          onPressOut={() => setTeamSwitcherPressed(false)}
-        >
-          <Text style={styles.teamNameText}>{team?.name ?? "No team"}</Text>
-          <Text style={styles.chevronIcon}>⌄</Text>
+      <View className="flex-row justify-between gap-3">
+        <Pressable className="flex-[1.5] flex-row items-center justify-between bg-surface px-3 py-2 rounded-lg border border-border active:bg-surface-raised">
+          <Text className="text-text-primary text-base font-bold">{team?.name ?? "No team"}</Text>
+          <Text className="text-text-secondary text-lg font-bold">⌄</Text>
         </Pressable>
 
-        <View style={styles.gwStepper}>
-          <Pressable onPress={handlePrevGW} disabled={!canGoPrev} style={styles.stepBtn}>
-            <Text style={[styles.stepText, !canGoPrev && styles.stepDisabled]}>‹</Text>
+        <View className="flex-1 flex-row items-center bg-surface rounded-lg border border-border">
+          <Pressable onPress={handlePrevGW} disabled={!canGoPrev} className="flex-1 items-center justify-center h-10">
+            <Text className={`text-[22px] font-light ${canGoPrev ? "text-text-primary" : "text-text-secondary opacity-30"}`}>‹</Text>
           </Pressable>
-          <View style={styles.gwInfo}>
-            <Text style={styles.gwLabel}>GW</Text>
-            <Text style={styles.gwValue}>{gameweek}</Text>
+          <View className="items-center justify-center px-1">
+            <Text className="text-text-secondary text-[9px] font-bold tracking-[0.5px]">GW</Text>
+            <Text className="text-text-primary text-base font-bold -mt-0.5">{gameweek}</Text>
           </View>
-          <Pressable onPress={handleNextGW} disabled={!canGoNext} style={styles.stepBtn}>
-            <Text style={[styles.stepText, !canGoNext && styles.stepDisabled]}>›</Text>
+          <Pressable onPress={handleNextGW} disabled={!canGoNext} className="flex-1 items-center justify-center h-10">
+            <Text className={`text-[22px] font-light ${canGoNext ? "text-text-primary" : "text-text-secondary opacity-30"}`}>›</Text>
           </Pressable>
         </View>
       </View>
 
       {/* Stats Row */}
-      <View style={styles.statsRow}>
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>VALUE</Text>
-          <Text style={styles.statValue}>£{Number(team?.value || 0).toFixed(1)}m</Text>
+      <View className="flex-row items-center gap-5">
+        <View className="gap-0.5">
+          <Text className="text-text-secondary text-[10px] font-bold tracking-[0.5px]">VALUE</Text>
+          <Text className="text-text-primary text-[15px] font-bold">£{Number(team?.value || 0).toFixed(1)}m</Text>
         </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statLabel}>ITB</Text>
-          <Text style={styles.statValue}>£{Number(team?.bank || 0).toFixed(1)}m</Text>
+        <View className="gap-0.5">
+          <Text className="text-text-secondary text-[10px] font-bold tracking-[0.5px]">ITB</Text>
+          <Text className="text-text-primary text-[15px] font-bold">£{Number(team?.bank || 0).toFixed(1)}m</Text>
         </View>
-        <View style={styles.pointsBadge}>
-          <View style={styles.dot} />
-          <Text style={styles.pointsText}>{team?.totalPoints ?? 0} pts</Text>
+        <View className="flex-row items-center bg-status-danger/15 px-2 py-1 rounded-full gap-1">
+          <View className="w-1.5 h-1.5 rounded-full bg-status-danger" />
+          <Text className="text-status-danger text-[13px] font-bold">{team?.totalPoints ?? 0} pts</Text>
         </View>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  root: {
-    backgroundColor: colors.bg.primary,
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.sm,
-    gap: spacing.md,
-  },
-  controlsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-  },
-  teamPicker: {
-    flex: 1.5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.bg.surface,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border.subtle,
-  },
-  teamPickerPressed: {
-    backgroundColor: colors.bg.surfaceRaised,
-  },
-  teamNameText: {
-    color: colors.text.primary,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  chevronIcon: {
-    color: colors.text.secondary,
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  gwStepper: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.bg.surface,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border.subtle,
-  },
-  stepBtn: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 40,
-  },
-  stepText: {
-    color: colors.text.primary,
-    fontSize: 22,
-    fontWeight: '300',
-  },
-  stepDisabled: {
-    color: colors.text.secondary,
-    opacity: 0.3,
-  },
-  gwInfo: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xs,
-  },
-  gwLabel: {
-    color: colors.text.secondary,
-    fontSize: 9,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  gwValue: {
-    color: colors.text.primary,
-    fontSize: 16,
-    fontWeight: '700',
-    marginTop: -2,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.lg,
-  },
-  statItem: {
-    gap: 2,
-  },
-  statLabel: {
-    color: colors.text.secondary,
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  statValue: {
-    color: colors.text.primary,
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  pointsBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: radius.full,
-    gap: spacing.xs,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.status.danger,
-  },
-  pointsText: {
-    color: colors.status.danger,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-});

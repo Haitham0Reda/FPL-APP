@@ -6,12 +6,14 @@
  */
 
 import React, { useMemo } from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Text } from '@/components/primitives/Text';
 import { Card } from '@/components/primitives/Card';
-import { colors } from '@/theme/colors';
 import { usePlayerStore } from '@/state/usePlayerStore';
 import { useTeamStore } from '@/state/useTeamStore';
+import { getPlayerPosition } from '@/utils/players';
+
+const FDR_BG_CLASS = { 1: 'bg-fdr-1', 2: 'bg-fdr-2', 3: 'bg-fdr-3', 4: 'bg-fdr-4', 5: 'bg-fdr-5' };
 
 export function ResearchScreen() {
   const playersById = usePlayerStore(s => s.playersById);
@@ -35,21 +37,21 @@ export function ResearchScreen() {
 
   if (!activeTeam) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg.primary, padding: 20 }}>
-        <Text style={{ color: colors.text.secondary }}>No team selected.</Text>
+      <View className="flex-1 bg-secondary p-5">
+        <Text className="text-text-secondary">No team selected.</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bg.primary }}>
-      <View style={{ padding: 20 }}>
-        <Text style={{ color: colors.text.primary, fontSize: 24, fontWeight: '700', marginBottom: 16 }}>
+    <ScrollView className="flex-1 bg-secondary">
+      <View className="p-5">
+        <Text className="text-text-primary text-2xl font-bold mb-4">
           Research
         </Text>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 12, textTransform: 'uppercase' }}>
+        <Card className="mb-4">
+          <Text className="text-text-secondary text-xs mb-3 uppercase">
             Template Tracker
           </Text>
           {templateTracker.map(p => {
@@ -61,20 +63,20 @@ export function ResearchScreen() {
               .map(f => f.team_h_difficulty || f.team_a_difficulty);
 
             return (
-              <View key={p.id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 12 }}>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: colors.text.primary, fontSize: 14, fontWeight: '600' }}>
+              <View key={p.id} className="flex-row items-center mb-3 gap-3">
+                <View className="flex-1">
+                  <Text className="text-text-primary text-sm font-semibold">
                     {p.web_name}
                   </Text>
-                  <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
-                    {p.position} • £{(Number(p.now_cost || 0) / 10).toFixed(1)}m
+                  <Text className="text-text-secondary text-xs">
+                    {getPlayerPosition(p)} • £{(Number(p.now_cost || 0) / 10).toFixed(1)}m
                   </Text>
                 </View>
-                <View style={{ alignItems: 'flex-end' }}>
-                  <Text style={{ color: colors.accent.primary, fontSize: 14, fontWeight: '600' }}>
+                <View className="items-end">
+                  <Text className="text-primary text-sm font-semibold">
                     {p.selected_by_percent}%
                   </Text>
-                  <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
+                  <Text className="text-text-secondary text-xs">
                     Next FDR: {nextFdr.length > 0 ? nextFdr.join(', ') : '—'}
                   </Text>
                 </View>
@@ -83,31 +85,26 @@ export function ResearchScreen() {
           })}
         </Card>
 
-        <Card style={{ padding: 16, marginBottom: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 12, textTransform: 'uppercase' }}>
+        <Card className="mb-4">
+          <Text className="text-text-secondary text-xs mb-3 uppercase">
             Injury / News Feed
           </Text>
           {injuredPlayers.length === 0 && (
-            <Text style={{ color: colors.text.secondary, fontSize: 13 }}>No injury or news alerts.</Text>
+            <Text className="text-text-secondary text-[13px]">No injury or news alerts.</Text>
           )}
           {injuredPlayers.slice(0, 10).map(p => (
-            <View key={p.id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 12 }}>
-              <View style={{
-                width: 8,
-                height: 8,
-                borderRadius: 4,
-                backgroundColor: p.status === 'i' ? colors.status.danger : colors.status.warning,
-              }} />
-              <View style={{ flex: 1 }}>
-                <Text style={{ color: colors.text.primary, fontSize: 14, fontWeight: '600' }}>
+            <View key={p.id} className="flex-row items-center mb-3 gap-3">
+              <View className={`w-2 h-2 rounded-full ${p.status === 'i' ? 'bg-status-danger' : 'bg-status-warning'}`} />
+              <View className="flex-1">
+                <Text className="text-text-primary text-sm font-semibold">
                   {p.web_name}
                 </Text>
-                <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
+                <Text className="text-text-secondary text-xs">
                   {p.status === 'i' ? 'Injured' : p.status === 'd' ? 'Doubtful' : p.status?.toUpperCase() || 'Unknown'}
                 </Text>
               </View>
-              {p.chance_of_playing_next_round && (
-                <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
+              {p.chance_of_playing_next_round != null && (
+                <Text className="text-text-secondary text-xs">
                   {p.chance_of_playing_next_round}%
                 </Text>
               )}
@@ -115,8 +112,8 @@ export function ResearchScreen() {
           ))}
         </Card>
 
-        <Card style={{ padding: 16 }}>
-          <Text style={{ color: colors.text.secondary, fontSize: 12, marginBottom: 12, textTransform: 'uppercase' }}>
+        <Card>
+          <Text className="text-text-secondary text-xs mb-3 uppercase">
             Predicted Lineups
           </Text>
           {players.slice(0, 10).map(p => {
@@ -130,31 +127,22 @@ export function ResearchScreen() {
               : 3;
 
             return (
-              <View key={p.id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 12 }}>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: colors.text.primary, fontSize: 14, fontWeight: '600' }}>
+              <View key={p.id} className="flex-row items-center mb-3 gap-3">
+                <View className="flex-1">
+                  <Text className="text-text-primary text-sm font-semibold">
                     {p.web_name}
                   </Text>
-                  <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
-                    {p.position} • {p.news?.slice(0, 40) || '—'}
+                  <Text className="text-text-secondary text-xs">
+                    {getPlayerPosition(p)} • {p.news?.slice(0, 40) || '—'}
                   </Text>
                 </View>
-                <View style={{ alignItems: 'flex-end', gap: 4 }}>
-                  <Text style={{ color: colors.accent.primary, fontSize: 13, fontWeight: '600' }}>
+                <View className="items-end gap-1">
+                  <Text className="text-primary text-[13px] font-semibold">
                     {p.chance_of_playing_next_round || 100}%
                   </Text>
-                  <View style={{
-                    flexDirection: 'row',
-                    gap: 4,
-                    alignItems: 'center',
-                  }}>
-                    <View style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: colors.fdr[`fdr${fdr}`] || colors.fdr.fdr3,
-                    }} />
-                    <Text style={{ color: colors.text.secondary, fontSize: 12 }}>
+                  <View className="flex-row gap-1 items-center">
+                    <View className={`w-2 h-2 rounded-full ${FDR_BG_CLASS[fdr] || FDR_BG_CLASS[3]}`} />
+                    <Text className="text-text-secondary text-xs">
                       FDR {fdr}
                     </Text>
                   </View>

@@ -3,55 +3,30 @@
  * E.g. "Value £98.4m", "ITB £1.6m".
  */
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { Text } from "./Text";
-import { colors, spacing, radius } from "../../theme";
+
+const EMPHASIS_CLASS = {
+  default: "border-border bg-surface-raised",
+  positive: "border-accent-muted bg-accent-primary/10",
+  warning: "border-status-warning/30 bg-status-warning/10",
+  danger: "border-status-danger/30 bg-status-danger/10",
+};
+
+const VALUE_CLASS = {
+  default: "text-text-primary",
+  positive: "text-accent-primary",
+  warning: "text-status-warning",
+  danger: "text-status-danger",
+};
+
 export const Pill = ({
   label,
   value,
   emphasis = "default"
 }) => {
-  const valueColor = emphasis === "positive" ? colors.accent.primary : emphasis === "warning" ? colors.status.warning : emphasis === "danger" ? colors.status.danger : colors.text.primary;
-  const containerStyle = emphasis === "positive" ? [styles.root, styles.rootPositive] : emphasis === "warning" ? [styles.root, styles.rootWarning] : emphasis === "danger" ? [styles.root, styles.rootDanger] : styles.root;
-  const valueStyle = {
-    color: valueColor,
-    fontSize: 14,
-    fontWeight: "700",
-    letterSpacing: -0.2
-  };
-  const labelStyle = {
-    fontSize: 10,
-    fontWeight: "600",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    color: colors.text.secondary
-  };
-  return <View style={containerStyle}>
-      <Text style={labelStyle}>{label}</Text>
-      <Text style={valueStyle}>{value}</Text>
+  return <View className={`rounded-xl px-3 py-2 border min-w-[70px] gap-0.5 ${EMPHASIS_CLASS[emphasis]}`}>
+      <Text className="text-[10px] font-semibold uppercase tracking-wide text-text-secondary">{label}</Text>
+      <Text className={`text-sm font-bold ${VALUE_CLASS[emphasis]}`}>{value}</Text>
     </View>;
 };
-const styles = StyleSheet.create({
-  root: {
-    backgroundColor: colors.bg.surfaceRaised,
-    borderRadius: radius.lg,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border.subtle,
-    minWidth: 70,
-    gap: 2
-  },
-  rootPositive: {
-    borderColor: colors.accent.primaryMuted,
-    backgroundColor: "rgba(16, 185, 129, 0.08)"
-  },
-  rootWarning: {
-    borderColor: "rgba(245, 158, 11, 0.3)",
-    backgroundColor: "rgba(245, 158, 11, 0.08)"
-  },
-  rootDanger: {
-    borderColor: "rgba(239, 68, 68, 0.3)",
-    backgroundColor: "rgba(239, 68, 68, 0.08)"
-  }
-});

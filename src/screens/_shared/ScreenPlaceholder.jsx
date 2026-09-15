@@ -4,127 +4,35 @@
  * so we can see the navigation working before each feature ships.
  */
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "../../components/primitives/Text";
-import { colors, spacing, radius } from "../../theme";
+
 export const ScreenPlaceholder = ({
   prdRef,
   blurb
-}) => <SafeAreaView style={styles.root} edges={["bottom"]}>
-    <View style={styles.body}>
-      <View style={styles.header}>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{prdRef}</Text>
+}) => <SafeAreaView className="flex-1 bg-secondary" edges={["bottom"]}>
+    <View className="flex-1 px-5 pt-6">
+      <View className="mb-8">
+        <View className="bg-surface-raised border border-border rounded-xl px-3 py-2 self-start">
+          <Text className="text-[11px] font-bold uppercase tracking-[1px] text-primary">{prdRef}</Text>
         </View>
       </View>
 
-      <View style={styles.content}>
-        <View style={styles.iconContainer}>
-          <View style={styles.icon}>
-            <Text style={styles.iconText}>⚽</Text>
+      <View className="flex-1 items-center justify-center gap-4 pb-14">
+        <View className="mb-3">
+          <View className="w-20 h-20 rounded-full bg-accent-muted border-2 border-primary items-center justify-center">
+            <Text className="text-4xl">⚽</Text>
           </View>
         </View>
 
-        <Text style={styles.title}>Elite FPL</Text>
-        <Text style={styles.blurb}>{blurb}</Text>
+        <Text className="text-3xl font-bold text-text-primary -tracking-[1px] mt-2">Elite FPL</Text>
+        <Text className="text-[15px] leading-[22px] text-text-secondary text-center max-w-[340px] px-4">{blurb}</Text>
 
-        <View style={styles.statusContainer}>
-          <View style={styles.statusDot} />
-          <Text style={styles.statusText}>Phase 0 - In Development</Text>
+        <View className="flex-row items-center gap-2 mt-5 px-4 py-2 bg-surface-raised rounded-full border border-border">
+          <View className="w-2 h-2 rounded-full bg-primary" />
+          <Text className="text-[13px] font-semibold text-text-secondary -tracking-[0.1px]">Phase 0 - In Development</Text>
         </View>
       </View>
     </View>
   </SafeAreaView>;
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.bg.primary
-  },
-  body: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl
-  },
-  header: {
-    marginBottom: spacing["2xl"]
-  },
-  badge: {
-    backgroundColor: colors.bg.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.border.subtle,
-    borderRadius: radius.lg,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    alignSelf: "flex-start"
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: "700",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    color: colors.accent.primary
-  },
-  content: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: spacing.base,
-    paddingBottom: spacing["4xl"]
-  },
-  iconContainer: {
-    marginBottom: spacing.md
-  },
-  icon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.accent.primaryMuted,
-    borderWidth: 2,
-    borderColor: colors.accent.primary,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  iconText: {
-    fontSize: 40
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: colors.text.primary,
-    letterSpacing: -1,
-    marginTop: spacing.sm
-  },
-  blurb: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: colors.text.secondary,
-    textAlign: "center",
-    maxWidth: 340,
-    paddingHorizontal: spacing.base
-  },
-  statusContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    marginTop: spacing.lg,
-    paddingHorizontal: spacing.base,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.bg.surfaceRaised,
-    borderRadius: radius.full,
-    borderWidth: 1,
-    borderColor: colors.border.subtle
-  },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.accent.primary
-  },
-  statusText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: colors.text.secondary,
-    letterSpacing: -0.1
-  }
-});

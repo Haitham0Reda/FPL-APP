@@ -7,17 +7,32 @@
  */
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { colors, spacing, radius } from "../../theme";
 import { cssInterop } from "nativewind";
 
-const SPACING_MAP = {
-  none: 0,
-  sm: spacing.sm,
-  base: spacing.base,
-  lg: spacing.lg,
-  xl: spacing.xl,
-  "2xl": spacing["2xl"]
+const PADDING_CLASS = {
+  none: "p-0",
+  sm: "p-2",
+  base: "p-4",
+  lg: "p-5",
+  xl: "p-6",
+  "2xl": "p-8",
 };
+
+const BG_CLASS = {
+  flat: "bg-surface",
+  raised: "bg-surface-raised",
+  overlay: "bg-surface-raised",
+};
+
+// shadowColor/shadowOpacity/shadowRadius/elevation and hairline border width
+// have no Tailwind equivalent in NativeWind — kept as plain style objects.
+const shadowStyle = {
+  shadowColor: '#000',
+  shadowOpacity: 0.4,
+  shadowRadius: 24,
+  elevation: 12,
+};
+
 export const Card = ({
   elevation = "raised",
   padding = "base",
@@ -26,31 +41,19 @@ export const Card = ({
   children,
   ...rest
 }) => {
-  const bg = elevation === "flat" ? colors.bg.surface : colors.bg.surfaceRaised;
-  return <View style={[styles.root, {
-    backgroundColor: bg,
-    padding: SPACING_MAP[padding]
-  }, elevation === "overlay" && styles.overlayBorder, shadow && styles.shadow, style]} {...rest}>
+  const borderWidthStyle = { borderWidth: elevation === "overlay" ? 1 : StyleSheet.hairlineWidth };
+  return <View
+    style={[borderWidthStyle, shadow && shadowStyle, style]}
+    className={[
+      "rounded-xl border-border",
+      BG_CLASS[elevation],
+      PADDING_CLASS[padding],
+    ].filter(Boolean).join(" ")}
+    {...rest}
+  >
       {children}
     </View>;
 };
-const styles = StyleSheet.create({
-  root: {
-    borderRadius: radius.lg,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border.subtle
-  },
-  overlayBorder: {
-    borderColor: colors.border.subtle,
-    borderWidth: 1
-  },
-  shadow: {
-    shadowColor: '#000',
-    shadowOpacity: 0.4,
-    shadowRadius: 24,
-    elevation: 12
-  }
-});
 
 cssInterop(Card, {
   className: "style"
